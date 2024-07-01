@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "ADGCharacter.generated.h"
+#include "AdgCharacter.generated.h"
 
 UCLASS()
-class DRAGONROGUE_API AADGCharacter : public ACharacter
+class DRAGONROGUE_API AAdgCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AADGCharacter();
+	AAdgCharacter();
 
 protected:
 	// Called when the game starts or when spawned
