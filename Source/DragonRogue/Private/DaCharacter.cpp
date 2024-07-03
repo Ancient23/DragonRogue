@@ -96,6 +96,18 @@ void ADaCharacter::LookStick(const FInputActionValue& InputValue)
 	AddControllerPitchInput(Value.Y*LookPitchRate*deltaSeconds);
 }
 
+void ADaCharacter::PrimaryAttack()
+{	
+	//ActionComp->StartActionByName(this, SharedGameplayTags::Action_PrimaryAttack);
+
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	
+	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+}
 
 // Called every frame
 void ADaCharacter::Tick(float DeltaTime)
@@ -132,6 +144,9 @@ void ADaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		// Look
 		EnhancedInputComponent->BindAction(LookMouseAction, ETriggerEvent::Triggered, this, &ADaCharacter::LookMouse);
 		EnhancedInputComponent->BindAction(LookStickAction, ETriggerEvent::Triggered, this, &ADaCharacter::LookStick);
+
+		// Primary Attack
+		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &ADaCharacter::PrimaryAttack);
 
 	}
 }

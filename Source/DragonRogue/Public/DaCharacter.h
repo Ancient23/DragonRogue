@@ -23,6 +23,9 @@ public:
 
 protected:
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ProjectileClass;
+	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
@@ -40,6 +43,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputAction* LookStickAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
+	UInputAction* PrimaryAttackAction;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -47,7 +53,7 @@ protected:
 	void Move(const FInputActionInstance& InputInstance);
 	void LookMouse(const FInputActionValue& Value);
 	void LookStick(const FInputActionValue& InputValue);
-
+	void PrimaryAttack();
 	
 public:	
 	// Called every frame
