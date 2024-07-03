@@ -148,6 +148,8 @@ void ADaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		// Primary Attack
 		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &ADaCharacter::PrimaryAttack);
 
+		// Jump
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 	}
 }
 
