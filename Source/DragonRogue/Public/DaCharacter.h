@@ -11,6 +11,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
+class UDaInteractionComponent;
 
 UCLASS()
 class DRAGONROGUE_API ADaCharacter : public ACharacter
@@ -32,6 +33,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 
+	UPROPERTY(VisibleAnywhere)
+	UDaInteractionComponent* InteractionComp;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputMappingContext* MoveInputMappingContext;
 
@@ -48,6 +52,9 @@ protected:
 	UInputAction* PrimaryAttackAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
+	UInputAction* PrimaryInteractionAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputAction* JumpAction;
 	
 	// Called when the game starts or when spawned
@@ -57,6 +64,7 @@ protected:
 	void LookMouse(const FInputActionValue& Value);
 	void LookStick(const FInputActionValue& InputValue);
 	void PrimaryAttack();
+	void PrimaryInteraction();
 	
 public:	
 	// Called every frame
