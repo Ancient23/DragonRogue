@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Animation/AnimPhysicsSolver.h"
 #include "Camera/CameraComponent.h"
+#include "DragonRogue/DragonRogue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -102,15 +103,37 @@ void ADaCharacter::LookStick(const FInputActionValue& InputValue)
 void ADaCharacter::PrimaryAttack()
 {	
 	//ActionComp->StartActionByName(this, SharedGameplayTags::Action_PrimaryAttack);
+	PlayAnimMontage(AttackAnim);
 
+	// @TODO: Use animation notify instead of timer
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ADaCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+}
+
+void ADaCharacter::PrimaryAttack_TimeElapsed()
+{
 	FVector HandLocation = GetMesh()->GetSocketLocation(TEXT("Muzzle_01"));
+
+	// Use Yaw from Character but pitch from camera
+	FRotator SpawnRot = GetActorRotation();
+	float CameraPitch = GetControlRotation().Pitch;
+
+	//LOG("CameraPitch: %f", CameraPitch);
+	// Adjust fire up slightly if camera is looking close to horizon, or keep aim up a bit if below horizon
+	if (CameraPitch<30.0f)
+		CameraPitch = CameraPitch + (CameraPitch*0.3f);
+	else if (CameraPitch>270.0f)
+		CameraPitch = CameraPitch + (359.0f - CameraPitch)*0.6f; 
 	
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+	SpawnRot.Pitch = CameraPitch;
+	FTransform SpawnTM = FTransform(SpawnRot, HandLocation);
+
+	//FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
+
 
 void ADaCharacter::PrimaryInteraction()
 {
