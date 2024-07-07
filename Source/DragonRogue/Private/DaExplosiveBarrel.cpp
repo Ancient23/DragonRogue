@@ -35,8 +35,6 @@ ADaExplosiveBarrel::ADaExplosiveBarrel()
 	RadialForceComp->ImpulseStrength = 800.0f;
 	RadialForceComp->bImpulseVelChange = true;
 	RadialForceComp->SetupAttachment(StaticMeshComp);
-
-	StaticMeshComp->OnComponentHit.AddDynamic(this, &ADaExplosiveBarrel::OnComponentHit);
 }
 
 void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -47,6 +45,14 @@ void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* Ot
 		RadialForceComp->FireImpulse();
 	}
 }
+
+void ADaExplosiveBarrel::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	StaticMeshComp->OnComponentHit.AddDynamic(this, &ADaExplosiveBarrel::OnComponentHit);
+}
+
 
 // Called when the game starts or when spawned
 void ADaExplosiveBarrel::BeginPlay()
