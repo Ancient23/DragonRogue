@@ -46,6 +46,7 @@ void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* Ot
 	}
 }
 
+// runs before begin play but after init
 void ADaExplosiveBarrel::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
