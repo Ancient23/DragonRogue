@@ -6,12 +6,26 @@
 #include "GameFramework/Actor.h"
 #include "DaProjectile.generated.h"
 
+class USphereComponent;
+class UProjectileMovementComponent;
+class UParticleSystemComponent;
+
 UCLASS()
 class DRAGONROGUE_API ADaProjectile : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	USphereComponent* SphereComp;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UProjectileMovementComponent* MovementComp;
+	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UParticleSystemComponent* EffectComp;
+	
 	// Sets default values for this actor's properties
 	ADaProjectile();
 
