@@ -114,59 +114,33 @@ void ADaCharacter::PrimaryAttack()
 void ADaCharacter::PrimaryAttack_TimeElapsed()
 {
 	FVector HandLocation = GetMesh()->GetSocketLocation(TEXT("Muzzle_01"));
-
-	// Use Yaw from Character but pitch from camera
-	//FRotator SpawnRot = GetActorRotation();
-	//float CameraPitch = GetControlRotation().Pitch;
-
-	//LOG("CameraPitch: %f", CameraPitch);
-	// Adjust fire up slightly if camera is looking close to horizon, or keep aim up a bit if below horizon
-	//if (CameraPitch<30.0f)
-	//	CameraPitch = CameraPitch + (CameraPitch*0.3f);
-	//else if (CameraPitch>270.0f)
-	//	CameraPitch = CameraPitch + (359.0f - CameraPitch)*0.6f; 
 	
-	//SpawnRot.Pitch = CameraPitch;
-	//FTransform SpawnTM = FTransform(SpawnRot, HandLocation);
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	
+
+	float AttackDistance = 5000.0f;
 	FVector CameraLocation = CameraComp->GetComponentLocation();
 	FRotator CameraRotation = CameraComp->GetComponentRotation();
-	FVector End = CameraLocation + (CameraRotation.Vector()*5000);
+	FVector End = CameraLocation + (CameraRotation.Vector()*AttackDistance);
 	
 	float Radius = 30.0f;
 	FHitResult Hit;
 	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, CameraLocation, End, ObjectQueryParams);
 	FColor LineColor = bBlockingHit ? FColor::Blue : FColor::Yellow;
+	FVector ImpactPoint = End;
 	if (AActor* HitActor = Hit.GetActor())
-	{
-		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
-
-		FRotator Rot = UKismetMathLibrary::MakeRotFromX(Hit.ImpactPoint - HandLocation);
-		FTransform SpawnTM = FTransform(Rot, HandLocation);
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
+		ImpactPoint = Hit.ImpactPoint;
 	
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
-	} else
-	{
-		// nothing hit, use trace end as desired target
+	FRotator Rot = UKismetMathLibrary::MakeRotFromX(ImpactPoint - HandLocation);
+	FTransform SpawnTM = FTransform(Rot, HandLocation);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 
-		DrawDebugSphere(GetWorld(), End, Radius, 32, LineColor, false, 2.0f);
-
-		FRotator Rot = UKismetMathLibrary::MakeRotFromX(End - HandLocation);
-		FTransform SpawnTM = FTransform(Rot, HandLocation);
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-	
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
-	}
+	DrawDebugSphere(GetWorld(), ImpactPoint, Radius, 32, LineColor, false, 2.0f);
 	//DrawDebugLine(GetWorld(), CameraLocation, End, LineColor, false, 2.0f, 0, 2.0f);
-	
 }
 
 
