@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DaProjectile.h"
 #include "GameFramework/Actor.h"
 #include "DaMagicProjectile.generated.h"
 
@@ -11,7 +12,7 @@ class UProjectileMovementComponent;
 class UParticleSystemComponent;
 
 UCLASS()
-class DRAGONROGUE_API ADaMagicProjectile : public AActor
+class DRAGONROGUE_API ADaMagicProjectile : public ADaProjectile
 {
 	GENERATED_BODY()
 	
