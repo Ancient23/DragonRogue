@@ -25,11 +25,17 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> ProjectileClass;
+	TSubclassOf<AActor> PrimaryAttackProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category="Attack")
-	UAnimMontage* AttackAnim;
+	UAnimMontage* PrimaryAttackAnim;
 
+	UPROPERTY(EditAnywhere, Category="Attack")
+	TSubclassOf<AActor> SecondaryAttackProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category="Attack")
+	UAnimMontage* SecondaryAttackAnim;
+	
 	FTimerHandle TimerHandle_PrimaryAttack;
 	
 	UPROPERTY(VisibleAnywhere)
@@ -57,6 +63,9 @@ protected:
 	UInputAction* PrimaryAttackAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
+	UInputAction* SecondaryAttackAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputAction* PrimaryInteractionAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
@@ -68,8 +77,13 @@ protected:
 	void Move(const FInputActionInstance& InputInstance);
 	void LookMouse(const FInputActionValue& Value);
 	void LookStick(const FInputActionValue& InputValue);
+
 	void PrimaryAttack();
-	void PrimaryAttack_TimeElapsed();
+	void SecondaryAttack();
+
+	UFUNCTION()
+	void Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass);
+	
 	void PrimaryInteraction();
 	
 public:	

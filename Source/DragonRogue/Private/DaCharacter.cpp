@@ -105,13 +105,26 @@ void ADaCharacter::LookStick(const FInputActionValue& InputValue)
 void ADaCharacter::PrimaryAttack()
 {	
 	//ActionComp->StartActionByName(this, SharedGameplayTags::Action_PrimaryAttack);
-	PlayAnimMontage(AttackAnim);
+	PlayAnimMontage(PrimaryAttackAnim);
 
 	// @TODO: Use animation notify instead of timer
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ADaCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+	FTimerDelegate Delegate;
+	Delegate.BindUFunction(this, "Attack_TimeElapsed", PrimaryAttackProjectileClass);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, Delegate, 0.2f, false);
 }
 
-void ADaCharacter::PrimaryAttack_TimeElapsed()
+void ADaCharacter::SecondaryAttack()
+{
+	PlayAnimMontage(SecondaryAttackAnim);
+
+	// @TODO: Use animation notify instead of timer
+	FTimerDelegate Delegate;
+	Delegate.BindUFunction(this, "Attack_TimeElapsed", SecondaryAttackProjectileClass);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, Delegate, 0.2f, false);
+}
+
+
+void ADaCharacter::Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass)
 {
 	FVector HandLocation = GetMesh()->GetSocketLocation(TEXT("Muzzle_01"));
 	
@@ -185,13 +198,13 @@ void ADaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(LookMouseAction, ETriggerEvent::Triggered, this, &ADaCharacter::LookMouse);
 		EnhancedInputComponent->BindAction(LookStickAction, ETriggerEvent::Triggered, this, &ADaCharacter::LookStick);
 
-		// Primary Attack/Ineraction
+		// Attack/Interaction
 		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &ADaCharacter::PrimaryAttack);
+		EnhancedInputComponent->BindAction(SecondaryAttackAction, ETriggerEvent::Triggered, this, &ADaCharacter::SecondaryAttack);
 		EnhancedInputComponent->BindAction(PrimaryInteractionAction, ETriggerEvent::Triggered, this, &ADaCharacter::PrimaryInteraction);
 
 		// Jump
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-
 		
 	}
 }
