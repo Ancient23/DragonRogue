@@ -11,6 +11,8 @@
 #include "DragonRogue/DragonRogue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/BlueprintTypeConversions.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ADaCharacter::ADaCharacter()
@@ -114,25 +116,57 @@ void ADaCharacter::PrimaryAttack_TimeElapsed()
 	FVector HandLocation = GetMesh()->GetSocketLocation(TEXT("Muzzle_01"));
 
 	// Use Yaw from Character but pitch from camera
-	FRotator SpawnRot = GetActorRotation();
-	float CameraPitch = GetControlRotation().Pitch;
+	//FRotator SpawnRot = GetActorRotation();
+	//float CameraPitch = GetControlRotation().Pitch;
 
 	//LOG("CameraPitch: %f", CameraPitch);
 	// Adjust fire up slightly if camera is looking close to horizon, or keep aim up a bit if below horizon
-	if (CameraPitch<30.0f)
-		CameraPitch = CameraPitch + (CameraPitch*0.3f);
-	else if (CameraPitch>270.0f)
-		CameraPitch = CameraPitch + (359.0f - CameraPitch)*0.6f; 
+	//if (CameraPitch<30.0f)
+	//	CameraPitch = CameraPitch + (CameraPitch*0.3f);
+	//else if (CameraPitch>270.0f)
+	//	CameraPitch = CameraPitch + (359.0f - CameraPitch)*0.6f; 
 	
-	SpawnRot.Pitch = CameraPitch;
-	FTransform SpawnTM = FTransform(SpawnRot, HandLocation);
+	//SpawnRot.Pitch = CameraPitch;
+	//FTransform SpawnTM = FTransform(SpawnRot, HandLocation);
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	
+	FVector CameraLocation = CameraComp->GetComponentLocation();
+	FRotator CameraRotation = CameraComp->GetComponentRotation();
+	FVector End = CameraLocation + (CameraRotation.Vector()*5000);
+	
+	float Radius = 30.0f;
+	FHitResult Hit;
+	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, CameraLocation, End, ObjectQueryParams);
+	FColor LineColor = bBlockingHit ? FColor::Blue : FColor::Yellow;
+	if (AActor* HitActor = Hit.GetActor())
+	{
+		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
 
-	//FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
+		FRotator Rot = UKismetMathLibrary::MakeRotFromX(Hit.ImpactPoint - HandLocation);
+		FTransform SpawnTM = FTransform(Rot, HandLocation);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
 	
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	} else
+	{
+		// nothing hit, use trace end as desired target
+
+		DrawDebugSphere(GetWorld(), End, Radius, 32, LineColor, false, 2.0f);
+
+		FRotator Rot = UKismetMathLibrary::MakeRotFromX(End - HandLocation);
+		FTransform SpawnTM = FTransform(Rot, HandLocation);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+	
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	}
+	//DrawDebugLine(GetWorld(), CameraLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+	
 }
 
 
