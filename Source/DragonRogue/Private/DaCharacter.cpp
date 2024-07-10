@@ -123,6 +123,15 @@ void ADaCharacter::SecondaryAttack()
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, Delegate, 0.2f, false);
 }
 
+void ADaCharacter::Dash()
+{
+	PlayAnimMontage(DashAnim);
+
+	// @TODO: Use animation notify instead of timer
+	FTimerDelegate Delegate;
+	Delegate.BindUFunction(this, "Attack_TimeElapsed", DashProjectileClass);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, Delegate, 0.2f, false);
+}
 
 void ADaCharacter::Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass)
 {
@@ -201,6 +210,7 @@ void ADaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		// Attack/Interaction
 		EnhancedInputComponent->BindAction(PrimaryAttackAction, ETriggerEvent::Triggered, this, &ADaCharacter::PrimaryAttack);
 		EnhancedInputComponent->BindAction(SecondaryAttackAction, ETriggerEvent::Triggered, this, &ADaCharacter::SecondaryAttack);
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &ADaCharacter::Dash);
 		EnhancedInputComponent->BindAction(PrimaryInteractionAction, ETriggerEvent::Triggered, this, &ADaCharacter::PrimaryInteraction);
 
 		// Jump

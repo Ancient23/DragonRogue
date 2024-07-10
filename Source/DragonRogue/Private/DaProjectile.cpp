@@ -30,6 +30,9 @@ ADaProjectile::ADaProjectile()
 void ADaProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (APawn *InstigatorActor = GetInstigator())
+		SphereComp->IgnoreActorWhenMoving(InstigatorActor, true);
 	
 }
 

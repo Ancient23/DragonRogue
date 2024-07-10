@@ -35,6 +35,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Attack")
 	UAnimMontage* SecondaryAttackAnim;
+
+	UPROPERTY(EditAnywhere, Category="Attack")
+	TSubclassOf<AActor> DashProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category="Attack")
+	UAnimMontage* DashAnim;
 	
 	FTimerHandle TimerHandle_PrimaryAttack;
 	
@@ -64,6 +70,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputAction* SecondaryAttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
+	UInputAction* DashAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputAction* PrimaryInteractionAction;
@@ -80,6 +89,7 @@ protected:
 
 	void PrimaryAttack();
 	void SecondaryAttack();
+	void Dash();
 
 	UFUNCTION()
 	void Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass);
