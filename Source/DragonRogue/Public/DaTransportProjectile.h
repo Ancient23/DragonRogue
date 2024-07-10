@@ -18,8 +18,11 @@ class DRAGONROGUE_API ADaTransportProjectile : public ADaProjectile
 public:
 	ADaTransportProjectile();
 
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
-	UParticleSystem* TransportEffect;
+	UPROPERTY(EditInstanceOnly)
+	UParticleSystem* TransportEffect = nullptr;
+
+	UPROPERTY(EditInstanceOnly)
+	UParticleSystemComponent* EffectFxComponent = nullptr;
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

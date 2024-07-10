@@ -12,8 +12,10 @@ ADaTransportProjectile::ADaTransportProjectile()
 	ElapsedTime = 0.0f;
 	bExploded = false;
 	
-	TransportEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("TransportEffect"));
-
+	// load particle system
+	FString ParticleEffectPath = TEXT("/Game/Content/ExampleContent/Effects/P_Explosion.uasset");
+	TransportEffect = Cast<UParticleSystem>(StaticLoadObject(UParticleSystem::StaticClass(), nullptr, *ParticleEffectPath));
+	
 }
 
 void ADaTransportProjectile::Tick(float DeltaTime)
@@ -21,7 +23,7 @@ void ADaTransportProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	ElapsedTime += DeltaTime;
 	
-	if (ElapsedTime >= 0.2f && !bExploded)
+	if (ElapsedTime >= 0.3f && !bExploded)
 	{
 		bExploded = true;
 		MovementComp->StopMovementImmediately();
@@ -36,9 +38,10 @@ void ADaTransportProjectile::Tick(float DeltaTime)
 void ADaTransportProjectile::DoTeleport()
 {
 	FVector ProjectileLocation = GetActorLocation();
+	FRotator ProjectileRotation = GetActorRotation();
 	if (APawn *InstigatorActor = GetInstigator())
 	{
-		InstigatorActor->SetActorLocation(ProjectileLocation);
+		InstigatorActor->TeleportTo(ProjectileLocation, ProjectileRotation);
 	}
 	Destroy();
 }
