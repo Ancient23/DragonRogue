@@ -40,14 +40,17 @@ void ADaCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	const APlayerController* PlayerController = GetController<APlayerController>();
-	const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+	if (PlayerController)
+	{
+		const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
 	
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-	check(Subsystem);
+		UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		check(Subsystem);
 
-	Subsystem->ClearAllMappings();
+		Subsystem->ClearAllMappings();
 	
-	Subsystem->AddMappingContext(MoveInputMappingContext, 0);
+		Subsystem->AddMappingContext(MoveInputMappingContext, 0);
+	}
 	
 }
 
