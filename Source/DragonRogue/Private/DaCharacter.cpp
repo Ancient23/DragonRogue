@@ -3,15 +3,13 @@
 
 #include "DaCharacter.h"
 
+#include "DaAttributeComponent.h"
 #include "DaInteractionComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Animation/AnimPhysicsSolver.h"
 #include "Camera/CameraComponent.h"
-#include "DragonRogue/DragonRogue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/BlueprintTypeConversions.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -28,6 +26,8 @@ ADaCharacter::ADaCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	InteractionComp = CreateDefaultSubobject<UDaInteractionComponent>("InteractionComp");
+
+	AttributeComp = CreateDefaultSubobject<UDaAttributeComponent>("AttributeComp");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
@@ -135,34 +135,37 @@ void ADaCharacter::Dash()
 
 void ADaCharacter::Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass)
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation(TEXT("Muzzle_01"));
+	if (ensure(ProjectileClass))
+	{
+		FVector HandLocation = GetMesh()->GetSocketLocation(TEXT("Muzzle_01"));
 	
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		FCollisionObjectQueryParams ObjectQueryParams;
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 
-	float AttackDistance = 5000.0f;
-	FVector CameraLocation = CameraComp->GetComponentLocation();
-	FRotator CameraRotation = CameraComp->GetComponentRotation();
-	FVector End = CameraLocation + (CameraRotation.Vector()*AttackDistance);
+		float AttackDistance = 5000.0f;
+		FVector CameraLocation = CameraComp->GetComponentLocation();
+		FRotator CameraRotation = CameraComp->GetComponentRotation();
+		FVector End = CameraLocation + (CameraRotation.Vector()*AttackDistance);
 	
-	float Radius = 30.0f;
-	FHitResult Hit;
-	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, CameraLocation, End, ObjectQueryParams);
-	FColor LineColor = bBlockingHit ? FColor::Blue : FColor::Yellow;
-	FVector ImpactPoint = End;
-	if (AActor* HitActor = Hit.GetActor())
-		ImpactPoint = Hit.ImpactPoint;
+		float Radius = 30.0f;
+		FHitResult Hit;
+		bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, CameraLocation, End, ObjectQueryParams);
+		FColor LineColor = bBlockingHit ? FColor::Blue : FColor::Yellow;
+		FVector ImpactPoint = End;
+		if (AActor* HitActor = Hit.GetActor())
+			ImpactPoint = Hit.ImpactPoint;
 	
-	FRotator Rot = UKismetMathLibrary::MakeRotFromX(ImpactPoint - HandLocation);
-	FTransform SpawnTM = FTransform(Rot, HandLocation);
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+		FRotator Rot = UKismetMathLibrary::MakeRotFromX(ImpactPoint - HandLocation);
+		FTransform SpawnTM = FTransform(Rot, HandLocation);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 
-	DrawDebugSphere(GetWorld(), ImpactPoint, Radius, 32, LineColor, false, 2.0f);
-	//DrawDebugLine(GetWorld(), CameraLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+		DrawDebugSphere(GetWorld(), ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+		//DrawDebugLine(GetWorld(), CameraLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+	}
 }
 
 

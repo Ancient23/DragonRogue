@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "DaCharacter.generated.h"
 
+class UDaAttributeComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
@@ -53,6 +54,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UDaInteractionComponent* InteractionComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UDaAttributeComponent* AttributeComp;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputMappingContext* MoveInputMappingContext;
 
