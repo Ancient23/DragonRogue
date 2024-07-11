@@ -2,7 +2,7 @@
 
 
 #include "DaExplosiveBarrel.h"
-
+#include "DaAttributeComponent.h"
 #include "AssetTypeCategories.h"
 #include "PhysicsEngine/PhysicsSettings.h"
 #include "PhysicsEngine/RadialForceComponent.h"
@@ -41,8 +41,22 @@ void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* Ot
 {
 	if ((OtherActor!=nullptr)&&(OtherActor!=this)&&(OtherComp!=nullptr))
 	{
-		if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Hit: %s"), *OtherActor->GetName()));
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Hit: %s"), *OtherActor->GetName()));
+		}
+		
 		RadialForceComp->FireImpulse();
+
+		// if its a player with an attribute component hit it hard
+		UDaAttributeComponent* AttributeComp = Cast<UDaAttributeComponent>(OtherActor->GetComponentByClass(UDaAttributeComponent::StaticClass()));
+		if (AttributeComp)
+		{
+			AttributeComp->ApplyHealthChange(-50.0f);
+		}
+		
+		FString CombinedString = FString::Printf(TEXT("Hit at Location: %s"), *Hit.ImpactPoint.ToString());
+		DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);
 	}
 }
 
