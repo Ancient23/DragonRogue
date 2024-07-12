@@ -15,25 +15,22 @@ class DRAGONROGUE_API ADaTransportProjectile : public ADaProjectile
 {
 	GENERATED_BODY()
 
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Category="Teleport")
+	float TeleportDelay;
+
+	UPROPERTY(EditDefaultsOnly, Category="Teleport")
+	float DetonateDelay;
+	
+	FTimerHandle TimerHandle_Detonate;
+
+	virtual void Explode_Implementation() override;
+	void DoTeleport();
+
+	virtual void BeginPlay() override;
+
 public:
 	ADaTransportProjectile();
 
-	UPROPERTY(EditInstanceOnly)
-	UParticleSystem* TransportEffect = nullptr;
-
-	UPROPERTY(EditInstanceOnly)
-	UParticleSystemComponent* EffectFxComponent = nullptr;
-	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-protected:
-	FTimerHandle TimerHandle_Transport;
-	float ElapsedTime;
-	bool bExploded;
-	
-	void DoTeleport();
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 };

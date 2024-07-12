@@ -12,7 +12,6 @@ ADaMagicProjectile::ADaMagicProjectile()
 {
 	MovementComp->InitialSpeed = 1000.0f;
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ADaMagicProjectile::OnActorOverlap);
-	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ADaMagicProjectile::OnActorEndOverlap);
 }
 
 void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -27,10 +26,4 @@ void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 	}
 }
 
-void ADaMagicProjectile::OnActorEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	//@TODO: Figure out why this needs to be implemented in Blueprint subclass in order for this code to be called
-	// NOTE: destroying actor here means event wont be called in Blueprint if implemented
-	// Destroy();
-}
 

@@ -141,33 +141,45 @@ void ADaCharacter::Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass)
 	if (ensure(ProjectileClass))
 	{
 		FVector HandLocation = GetMesh()->GetSocketLocation(TEXT("Muzzle_01"));
-	
-		FCollisionObjectQueryParams ObjectQueryParams;
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 
-		float AttackDistance = 5000.0f;
-		FVector CameraLocation = CameraComp->GetComponentLocation();
-		FRotator CameraRotation = CameraComp->GetComponentRotation();
-		FVector End = CameraLocation + (CameraRotation.Vector()*AttackDistance);
-	
-		float Radius = 30.0f;
-		FHitResult Hit;
-		bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, CameraLocation, End, ObjectQueryParams);
-		FColor LineColor = bBlockingHit ? FColor::Blue : FColor::Yellow;
-		FVector ImpactPoint = End;
-		if (AActor* HitActor = Hit.GetActor())
-			ImpactPoint = Hit.ImpactPoint;
-	
-		FRotator Rot = UKismetMathLibrary::MakeRotFromX(ImpactPoint - HandLocation);
-		FTransform SpawnTM = FTransform(Rot, HandLocation);
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParams.Instigator = this;
+
+		FCollisionShape Shape;
+		Shape.SetSphere(20.f);
+
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+		
+		FCollisionObjectQueryParams ObjectQueryParams;
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		float AttackDistance = 5000.0f;
+		FVector Start = CameraComp->GetComponentLocation();
+		//FRotator CameraRotation = CameraComp->GetComponentRotation();
+		FRotator ControlRotation = GetControlRotation();
+		FVector End = Start + (ControlRotation.Vector()*AttackDistance);
+		FVector ImpactPoint = End;
+		
+		FHitResult Hit;
+		bool bBlockingHit = GetWorld()->SweepSingleByObjectType(Hit, Start, End, FQuat::Identity, ObjectQueryParams, Shape, Params);
+		if (bBlockingHit)
+		{
+			ImpactPoint = Hit.ImpactPoint;
+		}
+	
+		FRotator Rot = UKismetMathLibrary::MakeRotFromX(ImpactPoint - HandLocation);
+		FTransform SpawnTM = FTransform(Rot, HandLocation);
 		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 
-		DrawDebugSphere(GetWorld(), ImpactPoint, Radius, 32, LineColor, false, 2.0f);
-		//DrawDebugLine(GetWorld(), CameraLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+		// Debug
+		// float Radius = 30.0f;
+		// FColor LineColor = bBlockingHit ? FColor::Blue : FColor::Yellow;
+		// DrawDebugSphere(GetWorld(), ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+		// DrawDebugLine(GetWorld(), CameraLocation, End, LineColor, false, 2.0f, 0, 2.0f);
 	}
 }
 

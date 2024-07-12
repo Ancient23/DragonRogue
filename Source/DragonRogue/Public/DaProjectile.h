@@ -10,31 +10,36 @@ class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class DRAGONROGUE_API ADaProjectile : public AActor
 {
 	GENERATED_BODY()
 	
-public:
+protected:
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	USphereComponent* SphereComp;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	UProjectileMovementComponent* MovementComp;
 	
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	UParticleSystemComponent* EffectComp;
-	
-	// Sets default values for this actor's properties
-	ADaProjectile();
 
-protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UParticleSystem* ImpactVFX;
+
+	UFUNCTION()
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Explode();
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	// Sets default values for this actor's properties
+	ADaProjectile();
 
 };

@@ -5,50 +5,50 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ADaTransportProjectile::ADaTransportProjectile()
 {
-	MovementComp->InitialSpeed = 1000.0f;
-	ElapsedTime = 0.0f;
-	bExploded = false;
-	
 	// load particle system
 	FString ParticleEffectPath = TEXT("/Game/Content/ExampleContent/Effects/P_Explosion.uasset");
-	TransportEffect = Cast<UParticleSystem>(StaticLoadObject(UParticleSystem::StaticClass(), nullptr, *ParticleEffectPath));
-	
-}
+	ImpactVFX = Cast<UParticleSystem>(StaticLoadObject(UParticleSystem::StaticClass(), nullptr, *ParticleEffectPath));
 
-void ADaTransportProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	ElapsedTime += DeltaTime;
-	
-	if (ElapsedTime >= 0.3f && !bExploded)
-	{
-		bExploded = true;
-		MovementComp->StopMovementImmediately();
-		FVector ProjectileLocation = GetActorLocation();
-		FRotator ProjectileRotation = GetActorRotation();
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TransportEffect, ProjectileLocation, ProjectileRotation);
-		
-		GetWorldTimerManager().SetTimer(TimerHandle_Transport, this, &ADaTransportProjectile::DoTeleport, 0.2f, false);
-	}
-}
+	TeleportDelay = 0.2f;
+	DetonateDelay = 0.2f;
 
-void ADaTransportProjectile::DoTeleport()
-{
-	FVector ProjectileLocation = GetActorLocation();
-	FRotator ProjectileRotation = GetActorRotation();
-	if (APawn *InstigatorActor = GetInstigator())
-	{
-		InstigatorActor->TeleportTo(ProjectileLocation, ProjectileRotation);
-	}
-	Destroy();
+	MovementComp->InitialSpeed = 6000.0f;
 }
 
 void ADaTransportProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	ElapsedTime = 0.0f;
-	
+
+	GetWorldTimerManager().SetTimer(TimerHandle_Detonate, this, &ADaTransportProjectile::Explode, DetonateDelay );
+}
+
+void ADaTransportProjectile::Explode_Implementation()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Detonate);
+
+	UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+
+	EffectComp->DeactivateSystem();
+	MovementComp->StopMovementImmediately();
+	SetActorEnableCollision(false);
+
+	FTimerHandle TimerHandle_DelayedTeleport;
+	GetWorldTimerManager().SetTimer(TimerHandle_DelayedTeleport, this, &ADaTransportProjectile::DoTeleport, DetonateDelay );
+
+	// super destroys so just override so actor can live through timer.
+}
+
+void ADaTransportProjectile::DoTeleport()
+{
+	APawn *InstigatorActor = GetInstigator();
+	if (ensure(InstigatorActor))
+	{
+		// Projectile rotation points actor in new direction but can be jarring
+		// FRotator ProjectileRotation = GetActorRotation();
+		InstigatorActor->TeleportTo(GetActorLocation(), InstigatorActor->GetActorRotation());
+	}
 }
