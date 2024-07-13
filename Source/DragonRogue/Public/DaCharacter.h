@@ -99,7 +99,11 @@ protected:
 	void Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass);
 	
 	void PrimaryInteraction();
-	
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	virtual void PostInitializeComponents() override;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

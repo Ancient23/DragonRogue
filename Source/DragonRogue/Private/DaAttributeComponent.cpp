@@ -20,5 +20,8 @@ bool UDaAttributeComponent::ApplyHealthChange(float Delta)
 	return true;
 }
 
-
+bool UDaAttributeComponent::IsAlive() const
+{
+	return Health > 0.f;
+}
 

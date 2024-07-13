@@ -34,6 +34,13 @@ ADaCharacter::ADaCharacter()
 	bUseControllerRotationYaw = false;
 }
 
+void ADaCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ADaCharacter::OnHealthChanged);
+}
+
 // Called when the game starts or when spawned
 void ADaCharacter::BeginPlay()
 {
@@ -187,6 +194,16 @@ void ADaCharacter::Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass)
 void ADaCharacter::PrimaryInteraction()
 {
 	if (InteractionComp) InteractionComp->PrimaryInteract();
+}
+
+void ADaCharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth,
+	float Delta)
+{
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+	}
 }
 
 // Called every frame
