@@ -9,6 +9,7 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
+class UAudioComponent;
 
 UCLASS(Abstract)
 class DRAGONROGUE_API ADaProjectile : public AActor
@@ -26,8 +27,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	UParticleSystemComponent* EffectComp;
 
+	UPROPERTY(VisibleAnywhere, Category="Components")
+	UAudioComponent* FlightSoundComp;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	UParticleSystem* ImpactVFX;
+
+	UPROPERTY(EditDefaultsOnly, Category= "Sound FX")
+	USoundBase* ImpactSound;
 
 	UFUNCTION()
 	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

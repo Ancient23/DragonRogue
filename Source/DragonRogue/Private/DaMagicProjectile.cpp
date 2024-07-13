@@ -23,6 +23,8 @@ void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 		{
 			AttributeComp->ApplyHealthChange(-20.0f);
 		}
+
+		Explode();
 	}
 }
 
