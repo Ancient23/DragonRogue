@@ -3,10 +3,12 @@
 
 #include "DaAttributeComponent.h"
 
+
 // Sets default values
 UDaAttributeComponent::UDaAttributeComponent()
 {
 	Health = 100.0f;
+	HealthMax = 200.0f;
 }
 
 
@@ -14,7 +16,8 @@ UDaAttributeComponent::UDaAttributeComponent()
 bool UDaAttributeComponent::ApplyHealthChange(float Delta)
 {
 	Health += Delta;
-
+	Health = FMath::Clamp(Health, 0, HealthMax);
+	
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 	
 	return true;
