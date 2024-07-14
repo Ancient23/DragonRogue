@@ -2,8 +2,8 @@
 
 
 #include "DaProjectile.h"
+#include "DaAttributeComponent.h"
 
-#include "SkeletalDebugRendering.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -32,11 +32,26 @@ ADaProjectile::ADaProjectile()
 
 	FlightSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("FlightSoundComp"));
 	FlightSoundComp->SetupAttachment(RootComponent);
+
+	DamageAmount = 0.f;
 }
 
 void ADaProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Explode();
+	ApplyDamage(OtherActor, true);
+}
+
+void ADaProjectile::ApplyDamage(AActor* OtherActor, bool ShouldExplode)
+{
+	if (OtherActor && OtherActor != GetInstigator() && DamageAmount>0.f)
+	{
+		if (UDaAttributeComponent* AttributeComp = Cast<UDaAttributeComponent>(OtherActor->GetComponentByClass(UDaAttributeComponent::StaticClass())))
+		{
+			AttributeComp->ApplyHealthChange(-DamageAmount);
+		}
+	}
+
+	if(ShouldExplode) Explode();
 }
 
 void ADaProjectile::Explode_Implementation()
