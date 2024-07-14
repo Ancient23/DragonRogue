@@ -204,6 +204,10 @@ void ADaCharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponen
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		DisableInput(PC);
 	}
+	else if (Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	}
 }
 
 // Called every frame
