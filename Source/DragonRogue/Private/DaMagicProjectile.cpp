@@ -29,8 +29,14 @@ void ADaMagicProjectile::ProjectileWillLaunch()
 	Super::ProjectileWillLaunch();
 
 	ADaCharacter* Character = Cast<ADaCharacter>(GetInstigator());
-	if (ensure(Character))
+	if (IsValid(Character))
 	{
-		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), TEXT("Muzzle_01"), Character->GetActorLocation(), Character->GetActorRotation());
+		//FString CombinedString = FString::Printf(TEXT("Activate Emitter"));
+		//DrawDebugString(GetWorld(), Character->GetActorLocation(), CombinedString, nullptr, FColor::Green, 2.0f, true);
+		//FVector HandLocation = Character->GetMesh()->GetSocketLocation(TEXT("Muzzle_02"));
+		
+		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), TEXT("Muzzle_02"));
+		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), TEXT("Eyes_Position"));
+		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), TEXT("Muzzle_01"));
 	}
 }
