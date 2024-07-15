@@ -49,7 +49,6 @@ protected:
 	virtual void ActOnInteraction(AActor* InstigatorActor);
 
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
 	
 	void FadeMesh();
 	void RespawnItem();
