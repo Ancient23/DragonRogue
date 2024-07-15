@@ -39,6 +39,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category= "Sound FX")
 	USoundBase* ImpactSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UCameraShakeBase> CameraHitVFX;
+	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage")
 	float DamageAmount;
 	
