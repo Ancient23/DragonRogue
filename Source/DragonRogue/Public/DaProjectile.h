@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	UParticleSystem* ImpactVFX;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UParticleSystem* LaunchVFX;
+	
 	UPROPERTY(EditDefaultsOnly, Category= "Sound FX")
 	USoundBase* ImpactSound;
 
@@ -47,6 +50,8 @@ protected:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Explode();
+
+	virtual void ProjectileWillLaunch();
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

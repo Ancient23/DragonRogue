@@ -4,8 +4,10 @@
 #include "DaMagicProjectile.h"
 
 #include "DaAttributeComponent.h"
+#include "DaCharacter.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ADaMagicProjectile::ADaMagicProjectile()
@@ -22,3 +24,13 @@ void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 }
 
 
+void ADaMagicProjectile::ProjectileWillLaunch()
+{
+	Super::ProjectileWillLaunch();
+
+	ADaCharacter* Character = Cast<ADaCharacter>(GetInstigator());
+	if (ensure(Character))
+	{
+		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), TEXT("Muzzle_01"), Character->GetActorLocation(), Character->GetActorRotation());
+	}
+}

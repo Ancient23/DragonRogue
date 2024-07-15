@@ -67,11 +67,17 @@ void ADaProjectile::Explode_Implementation()
 	}
 }
 
+void ADaProjectile::ProjectileWillLaunch()
+{
+}
+
 // Called when the game starts or when spawned
 void ADaProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ProjectileWillLaunch();
+	
 	FlightSoundComp->Play();
 	
 	if (APawn *InstigatorActor = GetInstigator())
