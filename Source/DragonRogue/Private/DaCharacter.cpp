@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Util/ColorConstants.h"
 
 // Sets default values
 ADaCharacter::ADaCharacter()
@@ -207,6 +208,11 @@ void ADaCharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponen
 	else if (Delta < 0.0f)
 	{
 		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		GetMesh()->SetVectorParameterValueOnMaterials("FlashColor", FVector(UE::Geometry::LinearColors::Red3f()));
+	} else if (Delta > 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		GetMesh()->SetVectorParameterValueOnMaterials("FlashColor", FVector(UE::Geometry::LinearColors::Green3f()));
 	}
 }
 

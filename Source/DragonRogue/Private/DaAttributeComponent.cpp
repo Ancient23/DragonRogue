@@ -15,6 +15,29 @@ UDaAttributeComponent::UDaAttributeComponent()
 
 bool UDaAttributeComponent::ApplyHealthChange(float Delta)
 {
+	if (Delta < 0)
+	{
+		// damage
+		if (Health <= 0.f)
+		{
+			// Do nothing
+			return false;
+		}
+	}
+	else if (Delta > 0)
+	{
+		// Healing
+		if (Health >= HealthMax)
+		{
+			return false;
+		}
+	}
+	else
+	{
+		// 0 do nothing
+		return false;
+	}
+	
 	Health += Delta;
 	Health = FMath::Clamp(Health, 0, HealthMax);
 	
