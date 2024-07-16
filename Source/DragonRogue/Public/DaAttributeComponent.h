@@ -24,9 +24,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
 	float HealthMax;
-	
-	//@TODO: HealthMax, Stamina, Strength
 
+	bool bIsAlive;
+
+	//@TODO: HealthMax, Stamina, Strength
 public:
 
 	UFUNCTION(BlueprintCallable)

@@ -16,7 +16,9 @@ ADaPickupItem::ADaPickupItem()
 	RootComponent = SphereComp;
 	
 	BaseMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMeshComp"));
-	RootComponent = BaseMeshComp;
+	// disable Collision for this since we just use Interact interface
+	BaseMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BaseMeshComp->SetupAttachment(RootComponent);
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EffectComp"));
 	EffectComp->SetupAttachment(RootComponent);
@@ -37,8 +39,6 @@ void ADaPickupItem::BeginPlay()
 
 void ADaPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	IDaGameplayInterface::Interact_Implementation(InstigatorPawn);
-
 	if (bIsActive)
 		ActOnInteraction(InstigatorPawn);
 }

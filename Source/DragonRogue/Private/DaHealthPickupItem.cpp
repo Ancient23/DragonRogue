@@ -12,12 +12,15 @@ ADaHealthPickupItem::ADaHealthPickupItem()
 
 void ADaHealthPickupItem::ActOnInteraction(AActor* InstigatorActor)
 {
-	Super::ActOnInteraction(InstigatorActor);
 	if (InstigatorActor)
 	{
 		if (UDaAttributeComponent* AttributeComp = Cast<UDaAttributeComponent>(InstigatorActor->GetComponentByClass(UDaAttributeComponent::StaticClass())))
 		{
-			AttributeComp->ApplyHealthChange(HealthAmount);
+			if (AttributeComp->ApplyHealthChange(HealthAmount))
+			{
+				// super class handles effects if this was used so if no health change was made dont call super
+				Super::ActOnInteraction(InstigatorActor);
+			}
 		}
 	}
 }
