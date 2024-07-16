@@ -28,7 +28,7 @@ void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 		UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
 		BBComp->SetValueAsObject("TargetActor", Pawn);
 
-		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 2.0f, true);
 	}
 }
 
