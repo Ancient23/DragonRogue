@@ -30,14 +30,8 @@ void ADaAICharacter::PostInitializeComponents()
 
 void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (AIController)
-	{
-		UBlackboardComponent* BBComp = AIController->GetBlackboardComponent();
-		BBComp->SetValueAsObject("TargetActor", Pawn);
-
-		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 2.0f, true);
-	}
+	SetTargetActor(Pawn);
+	DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 2.0f, true);
 }
 
 void ADaAICharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth,
@@ -45,6 +39,8 @@ void ADaAICharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeCompon
 {
 	if (NewHealth <= 0.0f && Delta < 0.0f)
 	{
+		// Dead
+		
 		// stop BT
 		AAIController* AIController = Cast<AAIController>(GetController());
 		if (AIController)
@@ -62,12 +58,29 @@ void ADaAICharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeCompon
 	}
 	else if (Delta < 0.0f)
 	{
+		// Took Damage
+		if (InstigatorActor != this)
+		{
+			SetTargetActor(InstigatorActor);
+		}
+		
 		//GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		//GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Red3f()));
 	} else if (Delta > 0.0f)
 	{
+		// Healing
+		
 		//GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		//GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Green3f()));
+	}
+}
+
+void ADaAICharacter::SetTargetActor(AActor* NewTarget)
+{
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController)
+	{
+		AIController->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
 	}
 }
 

@@ -47,7 +47,7 @@ void ADaProjectile::ApplyDamage(AActor* OtherActor, bool ShouldExplode)
 	{
 		if (UDaAttributeComponent* AttributeComp = Cast<UDaAttributeComponent>(OtherActor->GetComponentByClass(UDaAttributeComponent::StaticClass())))
 		{
-			AttributeComp->ApplyHealthChange(-DamageAmount);
+			AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount);
 		}
 	}
 

@@ -52,7 +52,7 @@ void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* Ot
 		UDaAttributeComponent* AttributeComp = Cast<UDaAttributeComponent>(OtherActor->GetComponentByClass(UDaAttributeComponent::StaticClass()));
 		if (AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-50.0f);
+			AttributeComp->ApplyHealthChange(OtherActor, -50.0f);
 		}
 		
 		FString CombinedString = FString::Printf(TEXT("Hit at Location: %s"), *Hit.ImpactPoint.ToString());

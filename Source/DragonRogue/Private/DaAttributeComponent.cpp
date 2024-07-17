@@ -12,7 +12,7 @@ UDaAttributeComponent::UDaAttributeComponent()
 	bIsAlive = true;
 }
 
-bool UDaAttributeComponent::ApplyHealthChange(float Delta)
+bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	if (Delta < 0)
 	{
@@ -41,7 +41,7 @@ bool UDaAttributeComponent::ApplyHealthChange(float Delta)
 	Health = FMath::Clamp(Health, 0, HealthMax);
 
 	float ActualDelta = Health - OldHealth;
-	OnHealthChanged.Broadcast(nullptr, this, Health, ActualDelta);
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
 	if (Health <= 0.f)
 	{

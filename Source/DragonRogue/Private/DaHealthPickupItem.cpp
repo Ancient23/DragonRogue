@@ -16,7 +16,7 @@ void ADaHealthPickupItem::ActOnInteraction(AActor* InstigatorActor)
 	{
 		if (UDaAttributeComponent* AttributeComp = Cast<UDaAttributeComponent>(InstigatorActor->GetComponentByClass(UDaAttributeComponent::StaticClass())))
 		{
-			if (AttributeComp->ApplyHealthChange(HealthAmount))
+			if (AttributeComp->ApplyHealthChange(InstigatorActor, HealthAmount))
 			{
 				// super class handles effects if this was used so if no health change was made dont call super
 				Super::ActOnInteraction(InstigatorActor);
