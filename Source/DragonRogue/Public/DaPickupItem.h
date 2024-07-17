@@ -23,6 +23,15 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName TimeToHitParamName;
+
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName HitFlashColorParamName;
+
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName AlphaVisibilityParamName;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	USphereComponent* SphereComp;
 	

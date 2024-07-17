@@ -25,6 +25,15 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName TimeToHitParamName;
+
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName HitFlashColorParamName;
+	
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName PrimaryAttackHandSocketName;
+	
 	UPROPERTY(EditAnywhere, Category="Attack")
 	TSubclassOf<AActor> PrimaryAttackProjectileClass;
 
@@ -45,13 +54,13 @@ protected:
 	
 	FTimerHandle TimerHandle_PrimaryAttack;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UCameraComponent* CameraComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UDaInteractionComponent* InteractionComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")

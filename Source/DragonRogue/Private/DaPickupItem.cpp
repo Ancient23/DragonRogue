@@ -28,6 +28,10 @@ ADaPickupItem::ADaPickupItem()
 
 	RespawnDelay = 10.0f;
 	bIsActive = true;
+
+	TimeToHitParamName = "TimeToHit";
+	HitFlashColorParamName = "FlashColor";
+	AlphaVisibilityParamName = "AlphaVisible";
 }
 
 void ADaPickupItem::BeginPlay()
@@ -52,8 +56,8 @@ void ADaPickupItem::ActOnInteraction(AActor* InstigatorActor)
 		UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation(), GetActorRotation());
 		UGameplayStatics::SpawnEmitterAtLocation(this, PickupVFX, GetActorLocation(), GetActorRotation());
 		
-		BaseMeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
-		BaseMeshComp->SetVectorParameterValueOnMaterials("FlashColor", FVector(UE::Geometry::LinearColors::Green3f()));
+		BaseMeshComp->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+		BaseMeshComp->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Green3f()));
 
 		// disable for a time, then re-enable after a time
 		FTimerHandle TimerHandle_DelayedHide;
@@ -68,14 +72,14 @@ void ADaPickupItem::ActOnInteraction(AActor* InstigatorActor)
 
 void ADaPickupItem::FadeMesh()
 {
-	BaseMeshComp->SetScalarParameterValueOnMaterials("AlphaVisible", 0.1f);
+	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 0.1f);
 	EffectComp->Deactivate();
 	IdleSoundComp->Stop();
 }
 
 void ADaPickupItem::RespawnItem()
 {
-	BaseMeshComp->SetScalarParameterValueOnMaterials("AlphaVisible", 1.f);
+	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 1.f);
 	bIsActive = true;
 	EffectComp->Activate();
 	IdleSoundComp->Play();

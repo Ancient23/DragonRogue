@@ -16,6 +16,10 @@ ADaMagicProjectile::ADaMagicProjectile()
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ADaMagicProjectile::OnActorOverlap);
 
 	DamageAmount = 20.f;
+
+	PrimaryHandSocketName = "Muzzle_01";
+	SecondaryHandSocketName = "Muzzle_02";
+	EyeSocketName = "Eyes_Position";
 }
 
 void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -39,8 +43,8 @@ void ADaMagicProjectile::ProjectileWillLaunch()
 		//DrawDebugString(GetWorld(), Character->GetActorLocation(), CombinedString, nullptr, FColor::Green, 2.0f, true);
 		//FVector HandLocation = Character->GetMesh()->GetSocketLocation(TEXT("Muzzle_02"));
 		
-		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), TEXT("Muzzle_02"));
-		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), TEXT("Eyes_Position"));
-		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), TEXT("Muzzle_01"));
+		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), SecondaryHandSocketName);
+		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), EyeSocketName);
+		UGameplayStatics::SpawnEmitterAttached(LaunchVFX, Character->GetMesh(), PrimaryHandSocketName);
 	}
 }

@@ -14,6 +14,15 @@ class DRAGONROGUE_API ADaMagicProjectile : public ADaProjectile
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName PrimaryHandSocketName;
+
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName SecondaryHandSocketName;
+
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName EyeSocketName;
+	
 	UFUNCTION()
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 

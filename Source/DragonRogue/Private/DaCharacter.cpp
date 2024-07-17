@@ -33,6 +33,10 @@ ADaCharacter::ADaCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
+
+	TimeToHitParamName = "TimeToHit";
+	PrimaryAttackHandSocketName = "Muzzle_01";
+	HitFlashColorParamName = "FlashColor";
 }
 
 void ADaCharacter::PostInitializeComponents()
@@ -148,7 +152,7 @@ void ADaCharacter::Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass)
 {
 	if (ensure(ProjectileClass))
 	{
-		FVector HandLocation = GetMesh()->GetSocketLocation(TEXT("Muzzle_01"));
+		FVector HandLocation = GetMesh()->GetSocketLocation(PrimaryAttackHandSocketName);
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -207,12 +211,12 @@ void ADaCharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponen
 	}
 	else if (Delta < 0.0f)
 	{
-		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
-		GetMesh()->SetVectorParameterValueOnMaterials("FlashColor", FVector(UE::Geometry::LinearColors::Red3f()));
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Red3f()));
 	} else if (Delta > 0.0f)
 	{
-		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
-		GetMesh()->SetVectorParameterValueOnMaterials("FlashColor", FVector(UE::Geometry::LinearColors::Green3f()));
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Green3f()));
 	}
 }
 
