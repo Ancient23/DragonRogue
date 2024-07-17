@@ -13,6 +13,7 @@ namespace EEnvQueryStatus
 
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
+class UCurveFloat;
 
 /**
  * 
@@ -29,14 +30,19 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	UEnvQuery* SpawnBotQuery;
+
+	UPROPERTY(EditDefaultsOnly, Category="AI")
+	UCurveFloat* DifficultyCurve;
 	
 	FTimerHandle TimerHandle_SpawnBots;
 
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	float SpawnTimerInterval;
 
+	UFUNCTION()
 	void SpawnBotTimerElapsed();
 
+	UFUNCTION()
 	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 	
 public:

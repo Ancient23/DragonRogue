@@ -11,6 +11,8 @@
 ADaAICharacter::ADaAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ADaAICharacter::PostInitializeComponents()

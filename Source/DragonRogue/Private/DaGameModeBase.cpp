@@ -3,10 +3,12 @@
 
 #include "DaGameModeBase.h"
 
+#include "DaAttributeComponent.h"
+#include "AI/DaAICharacter.h"
 #include "DragonRogue/DragonRogue.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
-
+#include "EngineUtils.h"
 
 ADaGameModeBase::ADaGameModeBase()
 {
@@ -40,7 +42,30 @@ void ADaGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryI
 		LOG_WARNING("Spawn bot EQS Query Failed");
 		return;
 	}
-	
+
+	int32 NumberOfAliveBots = 0;
+	for (TActorIterator<ADaAICharacter> It(GetWorld()); It; ++It)
+	{
+		ADaAICharacter* Bot = *It;
+
+		UDaAttributeComponent* AttribComp = Cast<UDaAttributeComponent>(Bot->GetComponentByClass(UDaAttributeComponent::StaticClass()));
+		if (AttribComp && AttribComp->IsAlive())
+		{
+			NumberOfAliveBots++;
+		}
+	}
+
+	float MaxBotCount = 10.f;
+	if (DifficultyCurve)
+	{
+		MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
+	}
+
+	if (NumberOfAliveBots >= MaxBotCount)
+	{
+		return;
+	}
+
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 	if (Locations.IsValidIndex(0))
 	{
