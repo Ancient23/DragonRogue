@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "DaAICharacter.generated.h"
 
+class UDaAttributeComponent;
 class UPawnSensingComponent;
 // AIPerception could also work... it was supposed to replace PawnSensing
 
@@ -23,7 +24,13 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category="Components")
 	UPawnSensingComponent* PawnSensingComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UDaAttributeComponent* AttributeComp;
 	
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth, float Delta);
 };
