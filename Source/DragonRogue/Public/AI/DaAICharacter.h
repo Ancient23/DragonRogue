@@ -23,6 +23,7 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleDefaultsOnly, Category="UI")
 	UDaWorldUserWidget* ActiveHealthBar;
 
 	UPROPERTY(EditDefaultsOnly, Category="UI")
