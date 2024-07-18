@@ -35,6 +35,12 @@ bool UDaAttributeComponent::IsActorAlive(AActor* Actor)
 
 bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
+	if (!GetOwner()->CanBeDamaged())
+	{
+		// God Mode
+		return false;
+	}
+	
 	if (Delta < 0)
 	{
 		// damage
@@ -76,6 +82,11 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	}
 	
 	return ActualDelta != 0;
+}
+
+bool UDaAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -HealthMax);
 }
 
 bool UDaAttributeComponent::IsAlive() const
