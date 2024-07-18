@@ -36,7 +36,9 @@ void ADaAICharacter::PostInitializeComponents()
 
 void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	SetTargetActor(Pawn);
+	SetTargetActor(Pawn); //@TODO: Toggle mode to set player only vs all characters so game designers can choose
+
+	//@TODO: Add some cool Widget or emote to NPC to signify when they've spotted the player
 	DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 2.0f, true);
 }
 

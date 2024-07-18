@@ -23,21 +23,6 @@ void ADaGameModeBase::StartPlay()
 	
 }
 
-void ADaGameModeBase::KillAll()
-{
-	for (TActorIterator<ADaAICharacter> It(GetWorld()); It; ++It)
-	{
-		ADaAICharacter* Bot = *It;
-
-		UDaAttributeComponent* AttribComp = UDaAttributeComponent::GetAttributes(Bot);
-		if (ensure(AttribComp) && AttribComp->IsAlive())
-		{
-			AttribComp->Kill(this); //@TODO: pass in player for kill credit?
-		}
-	}
-}
-
-
 void ADaGameModeBase::SpawnBotTimerElapsed()
 {
 	int32 NumberOfAliveBots = 0;
@@ -89,5 +74,19 @@ void ADaGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryI
 		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
 
 		DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.f);
+	}
+}
+
+void ADaGameModeBase::KillAll()
+{
+	for (TActorIterator<ADaAICharacter> It(GetWorld()); It; ++It)
+	{
+		ADaAICharacter* Bot = *It;
+
+		UDaAttributeComponent* AttribComp = UDaAttributeComponent::GetAttributes(Bot);
+		if (ensure(AttribComp) && AttribComp->IsAlive())
+		{
+			AttribComp->Kill(this); //@TODO: pass in player for kill credit?
+		}
 	}
 }
