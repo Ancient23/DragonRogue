@@ -8,6 +8,7 @@
 #include "DaAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Util/ColorConstants.h"
 
 // Sets default values
 ADaAICharacter::ADaAICharacter()
@@ -17,6 +18,9 @@ ADaAICharacter::ADaAICharacter()
 	AttributeComp = CreateDefaultSubobject<UDaAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	TimeToHitParamName = "TimeToHit";
+	HitFlashColorParamName = "FlashColor";
 }
 
 void ADaAICharacter::PostInitializeComponents()
@@ -37,26 +41,7 @@ void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 void ADaAICharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth,
 	float Delta)
 {
-	if (NewHealth <= 0.0f && Delta < 0.0f)
-	{
-		// Dead
-		
-		// stop BT
-		AAIController* AIController = Cast<AAIController>(GetController());
-		if (AIController)
-		{
-			AIController->GetBrainComponent()->StopLogic("Killed");
-		}
-		
-		// Ragdoll
-		// could also use anim bp, but will code it here.
-		GetMesh()->SetAllBodiesSimulatePhysics(true);
-		GetMesh()->SetCollisionProfileName("Ragdoll");
-
-		// Lifespan
-		SetLifeSpan(10.f);
-	}
-	else if (Delta < 0.0f)
+	if (Delta < 0.0f)
 	{
 		// Took Damage
 		if (InstigatorActor != this)
@@ -64,14 +49,35 @@ void ADaAICharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeCompon
 			SetTargetActor(InstigatorActor);
 		}
 		
-		//GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-		//GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Red3f()));
-	} else if (Delta > 0.0f)
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Red3f()));
+		
+		if (NewHealth <= 0.0f)
+		{
+			// Dead
+		
+			// stop BT
+			AAIController* AIController = Cast<AAIController>(GetController());
+			if (AIController)
+			{
+				AIController->GetBrainComponent()->StopLogic("Killed");
+			}
+		
+			// Ragdoll
+			// could also use anim bp, but will code it here.
+			GetMesh()->SetAllBodiesSimulatePhysics(true);
+			GetMesh()->SetCollisionProfileName("Ragdoll");
+
+			// Lifespan
+			SetLifeSpan(10.f);
+		}
+	}
+	else if (Delta > 0.0f)
 	{
 		// Healing
 		
-		//GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-		//GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Green3f()));
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
+		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Green3f()));
 	}
 }
 

@@ -20,7 +20,11 @@ public:
 
 protected:
 
-	virtual void PostInitializeComponents() override;
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName TimeToHitParamName;
+
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName HitFlashColorParamName;
 	
 	UPROPERTY(VisibleAnywhere, Category="Components")
 	UPawnSensingComponent* PawnSensingComp;
@@ -35,4 +39,6 @@ protected:
 	void OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 	void SetTargetActor(AActor* NewTarget);
+
+	virtual void PostInitializeComponents() override;
 };
