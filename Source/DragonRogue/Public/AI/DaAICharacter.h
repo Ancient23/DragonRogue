@@ -8,6 +8,9 @@
 
 class UDaAttributeComponent;
 class UPawnSensingComponent;
+class UUserWidget;
+class UDaWorldUserWidget;
+
 // AIPerception could also work... it was supposed to replace PawnSensing
 
 UCLASS()
@@ -20,6 +23,11 @@ public:
 
 protected:
 
+	UDaWorldUserWidget* ActiveHealthBar;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+	
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName TimeToHitParamName;
 
