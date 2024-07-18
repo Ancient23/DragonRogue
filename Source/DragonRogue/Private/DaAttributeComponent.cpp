@@ -12,6 +12,27 @@ UDaAttributeComponent::UDaAttributeComponent()
 	bIsAlive = true;
 }
 
+UDaAttributeComponent* UDaAttributeComponent::GetAttributes(AActor* FromActor)
+{
+	if (FromActor)
+	{
+		return Cast<UDaAttributeComponent>(FromActor->GetComponentByClass(UDaAttributeComponent::StaticClass()));
+	}
+
+	return nullptr;
+}
+
+bool UDaAttributeComponent::IsActorAlive(AActor* Actor)
+{
+	UDaAttributeComponent* AttributeComp = GetAttributes(Actor);
+	if (AttributeComp)
+	{
+		return AttributeComp->IsAlive();
+	}
+
+	return false;
+}
+
 bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	if (Delta < 0)
