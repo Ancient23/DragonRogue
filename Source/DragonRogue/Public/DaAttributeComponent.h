@@ -20,6 +20,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Attributes", meta = (DisplayName = "IsAlive"))
 	static bool IsActorAlive(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable, Category="Attributes", meta = (DisplayName = "HasLowHealth"))
+	static bool HasLowHealth(AActor* Actor);
 	
 	// Sets default values for this actor's properties
 	UDaAttributeComponent();
@@ -32,6 +35,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
 	float HealthMax;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
+	float LowHealthThreshold;
+	
 	bool bIsAlive;
 
 	//@TODO: HealthMax, Stamina, Strength
@@ -42,6 +48,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool LowHealth() const;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;

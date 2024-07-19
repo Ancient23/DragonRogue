@@ -9,6 +9,8 @@ UDaAttributeComponent::UDaAttributeComponent()
 {
 	Health = 100.0f;
 	HealthMax = 200.0f;
+	LowHealthThreshold = 20.0f;
+	
 	bIsAlive = true;
 }
 
@@ -28,6 +30,17 @@ bool UDaAttributeComponent::IsActorAlive(AActor* Actor)
 	if (AttributeComp)
 	{
 		return AttributeComp->IsAlive();
+	}
+
+	return false;
+}
+
+bool UDaAttributeComponent::HasLowHealth(AActor* Actor)
+{
+	UDaAttributeComponent* AttributeComp = GetAttributes(Actor);
+	if (AttributeComp)
+	{
+		return AttributeComp->LowHealth();
 	}
 
 	return false;
@@ -92,5 +105,10 @@ bool UDaAttributeComponent::Kill(AActor* InstigatorActor)
 bool UDaAttributeComponent::IsAlive() const
 {
 	return bIsAlive;
+}
+
+bool UDaAttributeComponent::LowHealth() const
+{
+	return Health <= LowHealthThreshold;
 }
 
