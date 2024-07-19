@@ -112,3 +112,13 @@ bool UDaAttributeComponent::LowHealth() const
 	return Health <= LowHealthThreshold;
 }
 
+float UDaAttributeComponent::GetHealth() const
+{
+	return Health;
+}
+
+float UDaAttributeComponent::GetHealthMax() const
+{
+	return HealthMax;
+}
+
