@@ -4,6 +4,7 @@
 #include "DaGameModeBase.h"
 
 #include "DaAttributeComponent.h"
+#include "DaCharacter.h"
 #include "AI/DaAICharacter.h"
 #include "DragonRogue/DragonRogue.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -88,5 +89,34 @@ void ADaGameModeBase::KillAll()
 		{
 			AttribComp->Kill(this); //@TODO: pass in player for kill credit?
 		}
+	}
+}
+
+void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
+{
+	// player dies -> timer elapsed, respawn player
+
+	ADaCharacter* Player = Cast<ADaCharacter>(VictimActor);
+	if (Player)
+	{
+		FTimerHandle TimerHandle_RespawnDelay;
+
+		float RespondDelay = 2.0f;
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespondDelay, false);
+	}
+
+	LOG("OnActorKilled: Victim: %s, Killer: %s", *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
+}
+
+void ADaGameModeBase::RespawnPlayerElapsed(AController* Controller)
+{
+	if (ensure(Controller))
+	{
+		//detach
+		Controller->UnPossess();
+		
+		RestartPlayer(Controller);
 	}
 }

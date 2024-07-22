@@ -3,6 +3,8 @@
 
 #include "DaAttributeComponent.h"
 
+#include "DaGameModeBase.h"
+
 
 // Sets default values
 UDaAttributeComponent::UDaAttributeComponent()
@@ -83,10 +85,16 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	float ActualDelta = Health - OldHealth;
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
-	if (Health <= 0.f)
+	if (ActualDelta < 0.0f && Health <= 0.f)
 	{
 		// dead
 		bIsAlive = false;
+
+		ADaGameModeBase* Gamemode = GetWorld()->GetAuthGameMode<ADaGameModeBase>();
+		if (Gamemode)
+		{
+			Gamemode->OnActorKilled(GetOwner(), InstigatorActor);
+		}
 	}
 	else if (OldHealth <= 0.f && Health > 0)
 	{
