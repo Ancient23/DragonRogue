@@ -103,7 +103,7 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 
 		float RespondDelay = 2.0f;
 		FTimerDelegate Delegate;
-		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
+		Delegate.BindUObject(this, &ThisClass::RespawnPlayerElapsed, Player->GetController());
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespondDelay, false);
 	}
 
