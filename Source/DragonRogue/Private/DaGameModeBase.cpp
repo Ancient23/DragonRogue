@@ -11,6 +11,8 @@
 #include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "EngineUtils.h"
 
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("da.SpawnBots"), true, TEXT("Enable Spawning of Bots with Timer"), ECVF_Cheat);
+
 ADaGameModeBase::ADaGameModeBase()
 {
 	SpawnTimerInterval=2.0f;
@@ -26,6 +28,12 @@ void ADaGameModeBase::StartPlay()
 
 void ADaGameModeBase::SpawnBotTimerElapsed()
 {
+	if (!CVarSpawnBots.GetValueOnGameThread())
+	{
+		LOG_WARNING("Bot Spawning Disabled via CVar 'CVarSpawnBots'.");
+		return;
+	}
+	
 	int32 NumberOfAliveBots = 0;
 	for (TActorIterator<ADaAICharacter> It(GetWorld()); It; ++It)
 	{

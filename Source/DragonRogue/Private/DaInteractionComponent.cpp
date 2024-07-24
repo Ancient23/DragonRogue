@@ -2,8 +2,10 @@
 
 
 #include "DaInteractionComponent.h"
-
 #include "DaGameplayInterface.h"
+
+static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("da.InteractionDebugDraw"), false, TEXT("Enable Debug Lines For Interact Component."), ECVF_Cheat);
+
 
 // Sets default values for this component's properties
 UDaInteractionComponent::UDaInteractionComponent()
@@ -36,6 +38,8 @@ void UDaInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void UDaInteractionComponent::PrimaryInteract()
 {
+	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
+	
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
@@ -56,10 +60,16 @@ void UDaInteractionComponent::PrimaryInteract()
 	
 	TArray<FHitResult> Hits;
 	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
+	
 	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
 	for (FHitResult Hit : Hits)
 	{
+		if (bDebugDraw)
+		{
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+		}
+		
 		if (AActor* HitActor = Hit.GetActor())
 		{
 			if (HitActor->Implements<UDaGameplayInterface>())
@@ -67,12 +77,14 @@ void UDaInteractionComponent::PrimaryInteract()
 				if (APawn* MyPawn = Cast<APawn>(MyOwner))
 				{
 					IDaGameplayInterface::Execute_Interact(HitActor, MyPawn);
-					DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
 					break;
 				}
 			}
 		}
 	}
 
-	DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+	if (bDebugDraw)
+	{
+		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+	}
 }

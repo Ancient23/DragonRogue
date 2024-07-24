@@ -4,7 +4,9 @@
 #include "DaAttributeComponent.h"
 
 #include "DaGameModeBase.h"
+#include "DragonRogue/DragonRogue.h"
 
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("da.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for Attribute Component"), ECVF_Cheat);
 
 // Sets default values
 UDaAttributeComponent::UDaAttributeComponent()
@@ -56,16 +58,25 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 		return false;
 	}
 	
-	if (Delta < 0)
+	if (Delta < 0.0f)
 	{
 		// damage
+		
 		if (Health <= 0.f)
 		{
 			// Do nothing
 			return false;
 		}
+
+		// Globally increase all damage using CVar multpilier
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+		if (DamageMultiplier != 1.0f)
+		{
+			LOG_WARNING("Global Damage Multiplier set to %f", DamageMultiplier);
+			Delta *= DamageMultiplier;
+		}
 	}
-	else if (Delta > 0)
+	else if (Delta > 0.0f)
 	{
 		// Healing
 		if (Health >= HealthMax)
