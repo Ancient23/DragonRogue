@@ -5,6 +5,7 @@
 
 #include "DaAttributeComponent.h"
 #include "DaCharacter.h"
+#include "DaGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -26,11 +27,13 @@ void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 {
 	if (OtherActor && OtherActor->GetComponentByClass(UDaAttributeComponent::StaticClass()))
 	{
-		UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraHitVFX, OtherActor->GetActorLocation(), 100.f, 1000.f);
-		ApplyDamage(OtherActor, true);
+		if (UDaGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+		{
+			UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraHitVFX, OtherActor->GetActorLocation(), 100.f, 1000.f);
+			Explode();
+		}
 	}
 }
-
 
 void ADaMagicProjectile::ProjectileWillLaunch()
 {

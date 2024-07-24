@@ -3,6 +3,7 @@
 
 #include "DaProjectile.h"
 #include "DaAttributeComponent.h"
+#include "DaGameplayFunctionLibrary.h"
 
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
@@ -38,20 +39,13 @@ ADaProjectile::ADaProjectile()
 
 void ADaProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	ApplyDamage(OtherActor, true);
-}
-
-void ADaProjectile::ApplyDamage(AActor* OtherActor, bool ShouldExplode)
-{
 	if (OtherActor && OtherActor != GetInstigator() && DamageAmount>0.f)
 	{
-		if (UDaAttributeComponent* AttributeComp = Cast<UDaAttributeComponent>(OtherActor->GetComponentByClass(UDaAttributeComponent::StaticClass())))
+		if (UDaGameplayFunctionLibrary::ApplyDamage(GetInstigator(), OtherActor, DamageAmount))
 		{
-			AttributeComp->ApplyHealthChange(GetInstigator(), -DamageAmount);
+			Explode();
 		}
 	}
-
-	if(ShouldExplode) Explode();
 }
 
 void ADaProjectile::Explode_Implementation()

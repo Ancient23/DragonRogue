@@ -47,9 +47,6 @@ protected:
 	
 	UFUNCTION()
 	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-	// Helper to apply damage to anything the projectile hits, the other actor
-	void ApplyDamage(AActor* OtherActor, bool ShouldExplode);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Explode();
