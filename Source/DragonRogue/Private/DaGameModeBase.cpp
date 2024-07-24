@@ -12,6 +12,7 @@
 #include "EngineUtils.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("da.SpawnBots"), true, TEXT("Enable Spawning of Bots with Timer"), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarDebugSpawnBots(TEXT("da.DrawDebugSpawnBots"), false, TEXT("Draw Debug Spheres showing location where Bots spawned"), ECVF_Cheat);
 
 ADaGameModeBase::ADaGameModeBase()
 {
@@ -82,7 +83,10 @@ void ADaGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryI
 	{
 		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
 
-		DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.f);
+		if (CVarDebugSpawnBots.GetValueOnGameThread())
+		{
+			DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.f);
+		}
 	}
 }
 

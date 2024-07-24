@@ -18,11 +18,14 @@ public:
 	ADaExplosiveBarrel();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category="Components")
 	UStaticMeshComponent* StaticMeshComp;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	URadialForceComponent* RadialForceComp;
+
+	UPROPERTY(EditAnywhere, Category="Damage")
+	float DamageAmount;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

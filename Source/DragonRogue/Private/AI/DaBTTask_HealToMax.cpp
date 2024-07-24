@@ -4,7 +4,7 @@
 #include "AI/DaBTTask_HealToMax.h"
 
 #include "AIController.h"
-#include "DaAttributeComponent.h"
+#include "DaGameplayFunctionLibrary.h"
 
 UDaBTTask_HealToMax::UDaBTTask_HealToMax()
 {
@@ -22,12 +22,10 @@ EBTNodeResult::Type UDaBTTask_HealToMax::ExecuteTask(UBehaviorTreeComponent& Own
 		{
 			return EBTNodeResult::Failed;
 		}
-
-		UDaAttributeComponent* Attributes = UDaAttributeComponent::GetAttributes(Pawn);
-
+		
 		// Heal Max for now
 		//@TODO: Look into the Tick features of BTTask to heal slowly over an interval.
-		bool bHealed = Attributes->ApplyHealthChange(Pawn, Attributes->GetHealthMax());
+		bool bHealed = UDaGameplayFunctionLibrary::ApplyHealingMax(Pawn, Pawn);
 
 		return bHealed ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 	}

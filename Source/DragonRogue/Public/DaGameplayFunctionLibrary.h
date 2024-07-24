@@ -22,5 +22,10 @@ public:
 	// HitResult passed as const reference becomes output pin in blueprints. If we passed just as Reference it would become an input pin
 	UFUNCTION(BlueprintCallable, Category="Gameplay")
 	static bool ApplyDirectionalDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount, const FHitResult& HitResult);
-	
+
+	UFUNCTION(BlueprintCallable, Category="Gameplay")
+	static bool ApplyHealing(AActor* Healer, AActor* TargetActor, float HealingAmount);
+
+	UFUNCTION(BlueprintCallable, Category="Gameplay")
+	static bool ApplyHealingMax(AActor* Healer, AActor* TargetActor);
 };

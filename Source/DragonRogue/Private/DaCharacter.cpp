@@ -4,6 +4,7 @@
 #include "DaCharacter.h"
 
 #include "DaAttributeComponent.h"
+#include "DaGameplayFunctionLibrary.h"
 #include "DaInteractionComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -12,6 +13,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Util/ColorConstants.h"
+
+static TAutoConsoleVariable<bool> CVarDebugPlayerArrows(TEXT("da.DrawPlayerOrientation"), false, TEXT("Enable Debug Draw of Player Actor and Pawn Orientation arrows"), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarDebugPlayerProjectiles(TEXT("da.DrawPlayerProjectiles"), false, TEXT("Enable Debug Draw of Player Spawned DaProjectile children"), ECVF_Cheat);
 
 // Sets default values
 ADaCharacter::ADaCharacter()
@@ -192,11 +196,13 @@ void ADaCharacter::Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass)
 		FTransform SpawnTM = FTransform(Rot, HandLocation);
 		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 
-		// Debug
-		// float Radius = 30.0f;
-		// FColor LineColor = bBlockingHit ? FColor::Blue : FColor::Yellow;
-		// DrawDebugSphere(GetWorld(), ImpactPoint, Radius, 32, LineColor, false, 2.0f);
-		// DrawDebugLine(GetWorld(), CameraLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+		if (CVarDebugPlayerProjectiles.GetValueOnGameThread())
+		{
+			float Radius = 30.0f;
+			FColor LineColor = bBlockingHit ? FColor::Blue : FColor::Yellow;
+			DrawDebugSphere(GetWorld(), ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+			DrawDebugLine(GetWorld(), Start, End, LineColor, false, 2.0f, 0, 2.0f);
+		}
 	}
 }
 
@@ -230,21 +236,24 @@ void ADaCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// -- Rotation Visualization -- //
-	const float DrawScale = 100.0f;
-	const float Thickness = 5.0f;
+	if (CVarDebugPlayerArrows.GetValueOnGameThread())
+	{
+		// -- Rotation Visualization -- //
+		const float DrawScale = 100.0f;
+		const float Thickness = 5.0f;
 
-	FVector LineStart = GetActorLocation();
-	// Offset to the right of pawn
-	LineStart += GetActorRightVector() * 100.0f;
-	// Set line end in direction of the actor's forward
-	FVector ActorDirection_LineEnd = LineStart + (GetActorForwardVector() * 100.0f);
-	// Draw Actor's Direction
-	DrawDebugDirectionalArrow(GetWorld(), LineStart, ActorDirection_LineEnd, DrawScale, FColor::Yellow, false, 0.0f, 0, Thickness);
+		FVector LineStart = GetActorLocation();
+		// Offset to the right of pawn
+		LineStart += GetActorRightVector() * 100.0f;
+		// Set line end in direction of the actor's forward
+		FVector ActorDirection_LineEnd = LineStart + (GetActorForwardVector() * 100.0f);
+		// Draw Actor's Direction
+		DrawDebugDirectionalArrow(GetWorld(), LineStart, ActorDirection_LineEnd, DrawScale, FColor::Yellow, false, 0.0f, 0, Thickness);
 
-	FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 100.0f);
-	// Draw 'Controller' Rotation ('PlayerController' that 'possessed' this character)
-	DrawDebugDirectionalArrow(GetWorld(), LineStart, ControllerDirection_LineEnd, DrawScale, FColor::Green, false, 0.0f, 0, Thickness);
+		FVector ControllerDirection_LineEnd = LineStart + (GetControlRotation().Vector() * 100.0f);
+		// Draw 'Controller' Rotation ('PlayerController' that 'possessed' this character)
+		DrawDebugDirectionalArrow(GetWorld(), LineStart, ControllerDirection_LineEnd, DrawScale, FColor::Green, false, 0.0f, 0, Thickness);
+	}
 }
 
 // Called to bind functionality to input
@@ -275,6 +284,6 @@ void ADaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ADaCharacter::HealSelf(float Amount /* = 100 */)
 {
-	AttributeComp->ApplyHealthChange(this, Amount);
+	UDaGameplayFunctionLibrary::ApplyHealing(this, this, Amount);
 }
 

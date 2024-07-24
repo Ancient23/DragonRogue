@@ -32,3 +32,23 @@ bool UDaGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AA
 
 	return false;
 }
+
+bool UDaGameplayFunctionLibrary::ApplyHealing(AActor* Healer, AActor* TargetActor, float HealingAmount)
+{
+	UDaAttributeComponent* AttributeComponent = UDaAttributeComponent::GetAttributes(TargetActor);
+	if (AttributeComponent)
+	{
+		return AttributeComponent->ApplyHealthChange(Healer, HealingAmount);
+	}
+	return false;
+}
+
+bool UDaGameplayFunctionLibrary::ApplyHealingMax(AActor* Healer, AActor* TargetActor)
+{
+	UDaAttributeComponent* AttributeComponent = UDaAttributeComponent::GetAttributes(TargetActor);
+	if (AttributeComponent)
+	{
+		return ApplyHealing(Healer, TargetActor, AttributeComponent->GetHealthMax());
+	}
+	return false;
+}

@@ -4,8 +4,11 @@
 #include "DaExplosiveBarrel.h"
 #include "DaAttributeComponent.h"
 #include "AssetTypeCategories.h"
+#include "DaGameplayFunctionLibrary.h"
 #include "PhysicsEngine/PhysicsSettings.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+
+static TAutoConsoleVariable<bool> CVarDebugExplosiveItem(TEXT("da.DebugExplosiveItem"), false, TEXT("Enable Debug Drawing for Explosive Level Items"), ECVF_Cheat);
 
 // Sets default values
 ADaExplosiveBarrel::ADaExplosiveBarrel()
@@ -35,13 +38,17 @@ ADaExplosiveBarrel::ADaExplosiveBarrel()
 	RadialForceComp->ImpulseStrength = 800.0f;
 	RadialForceComp->bImpulseVelChange = true;
 	RadialForceComp->SetupAttachment(StaticMeshComp);
+
+	DamageAmount = 50.0f;
 }
 
 void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	bool bDebug = CVarDebugExplosiveItem.GetValueOnGameThread();
+	
 	if ((OtherActor!=nullptr)&&(OtherActor!=this)&&(OtherComp!=nullptr))
 	{
-		if (GEngine)
+		if (bDebug && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Hit: %s"), *OtherActor->GetName()));
 		}
@@ -49,14 +56,13 @@ void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* Ot
 		RadialForceComp->FireImpulse();
 
 		// if its a player with an attribute component hit it hard
-		UDaAttributeComponent* AttributeComp = Cast<UDaAttributeComponent>(OtherActor->GetComponentByClass(UDaAttributeComponent::StaticClass()));
-		if (AttributeComp)
+		bool bDamaged = UDaGameplayFunctionLibrary::ApplyDamage(this, OtherActor, -DamageAmount);
+
+		if (bDebug)
 		{
-			AttributeComp->ApplyHealthChange(OtherActor, -50.0f);
+			FString CombinedString = FString::Printf(TEXT("Hit at Location: %s, Damaged: %hs"), *Hit.ImpactPoint.ToString(), bDamaged?"true":"false");
+			DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);
 		}
-		
-		FString CombinedString = FString::Printf(TEXT("Hit at Location: %s"), *Hit.ImpactPoint.ToString());
-		DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);
 	}
 }
 
