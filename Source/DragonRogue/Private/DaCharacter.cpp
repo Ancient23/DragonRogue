@@ -3,6 +3,7 @@
 
 #include "DaCharacter.h"
 
+#include "DaActionComponent.h"
 #include "DaAttributeComponent.h"
 #include "DaGameplayFunctionLibrary.h"
 #include "DaInteractionComponent.h"
@@ -33,6 +34,8 @@ ADaCharacter::ADaCharacter()
 	InteractionComp = CreateDefaultSubobject<UDaInteractionComponent>("InteractionComp");
 
 	AttributeComp = CreateDefaultSubobject<UDaAttributeComponent>("AttributeComp");
+
+	ActionComp = CreateDefaultSubobject<UDaActionComponent>("ActionComp");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
@@ -124,6 +127,16 @@ void ADaCharacter::LookStick(const FInputActionValue& InputValue)
 	const float deltaSeconds = GetWorld()->GetDeltaSeconds();
 	AddControllerYawInput(Value.X*LookYawRate*deltaSeconds);
 	AddControllerPitchInput(Value.Y*LookPitchRate*deltaSeconds);
+}
+
+void ADaCharacter::SprintStart()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ADaCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
 }
 
 void ADaCharacter::PrimaryAttack()
@@ -278,7 +291,11 @@ void ADaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		// Jump
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		
+
+		// Sprint
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ADaCharacter::SprintStart);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ADaCharacter::SprintStop);
+
 	}
 }
 

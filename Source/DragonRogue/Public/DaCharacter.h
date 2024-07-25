@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "DaCharacter.generated.h"
 
+class UDaActionComponent;
 class UDaAttributeComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -65,6 +66,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UDaAttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UDaActionComponent* ActionComp;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputMappingContext* MoveInputMappingContext;
@@ -92,6 +96,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputAction* JumpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
+	UInputAction* SprintAction;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -100,6 +107,9 @@ protected:
 	void LookMouse(const FInputActionValue& Value);
 	void LookStick(const FInputActionValue& InputValue);
 
+	void SprintStart();
+	void SprintStop();
+	
 	void PrimaryAttack();
 	void SecondaryAttack();
 	void Dash();
