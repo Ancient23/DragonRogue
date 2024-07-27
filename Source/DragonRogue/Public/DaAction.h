@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "DaAction.generated.h"
 
+class UWorld;
 /**
  * 
  */
@@ -25,5 +26,6 @@ public:
 	// Note: FName is hashed (FString is not)
 	UPROPERTY(EditDefaultsOnly, Category="Action")
 	FName ActionName;
-	
+
+	virtual UWorld* GetWorld() const override;
 };

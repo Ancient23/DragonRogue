@@ -32,29 +32,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName HitFlashColorParamName;
 	
-	UPROPERTY(VisibleAnywhere, Category="Effects")
-	FName PrimaryAttackHandSocketName;
-	
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> PrimaryAttackProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	UAnimMontage* PrimaryAttackAnim;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> SecondaryAttackProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	UAnimMontage* SecondaryAttackAnim;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> DashProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	UAnimMontage* DashAnim;
-	
-	FTimerHandle TimerHandle_PrimaryAttack;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	USpringArmComponent* SpringArmComp;
 
@@ -113,10 +90,6 @@ protected:
 	void PrimaryAttack();
 	void SecondaryAttack();
 	void Dash();
-
-	UFUNCTION()
-	void Attack_TimeElapsed(TSubclassOf<AActor> ProjectileClass);
-	
 	void PrimaryInteraction();
 
 	UFUNCTION()

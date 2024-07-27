@@ -14,3 +14,14 @@ void UDaAction::StopAction_Implementation(AActor* Instigator)
 {
 	LOG("Stopped %s", *GetNameSafe(this));
 }
+
+UWorld* UDaAction::GetWorld() const
+{
+	UActorComponent* Comp = Cast<UActorComponent>(GetOuter());
+	if (Comp)
+	{
+		return Comp->GetWorld();
+	}
+
+	return nullptr;
+}

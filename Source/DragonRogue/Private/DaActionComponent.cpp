@@ -15,6 +15,11 @@ UDaActionComponent::UDaActionComponent()
 void UDaActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (TSubclassOf<UDaAction> ActionClass : DefaultActions)
+	{
+		AddAction(ActionClass);
+	}
 }
 
 
