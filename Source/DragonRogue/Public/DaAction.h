@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "GameplayTagContainer.h"
 #include "DaAction.generated.h"
 
+class UDaActionComponent;
 class UWorld;
 /**
  * 
@@ -15,6 +16,17 @@ class DRAGONROGUE_API UDaAction : public UObject
 {
 	GENERATED_BODY()
 
+protected:
+
+	UFUNCTION(Blueprintable, Category="Action")
+	UDaActionComponent* GetOwningComponent() const;
+
+	UPROPERTY(EditDefaultsOnly, Category="Tags")
+	FGameplayTagContainer GrantTags;
+
+	UPROPERTY(EditDefaultsOnly, Category="Tags")
+	FGameplayTagContainer BlockedTags;
+	
 public:
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")

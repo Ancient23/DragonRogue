@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "DaActionComponent.generated.h"
 
@@ -16,6 +17,9 @@ class DRAGONROGUE_API UDaActionComponent : public UActorComponent
 
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Tags")
+	FGameplayTagContainer ActiveGameplayTags;
+	
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	void AddAction(TSubclassOf<UDaAction> ActionClass);
 
