@@ -36,14 +36,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	UParticleSystem* LaunchVFX;
 	
-	UPROPERTY(EditDefaultsOnly, Category= "Sound FX")
+	UPROPERTY(EditDefaultsOnly, Category= "Effects")
 	USoundBase* ImpactSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	TSubclassOf<UCameraShakeBase> CameraHitVFX;
-	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage")
-	float DamageAmount;
+	TSubclassOf<UCameraShakeBase> ImpactShake;
+
+	UPROPERTY(EditDefaultsOnly, Category="Effects")
+	float ImpactShakeInnerRadius;	
+
+	UPROPERTY(EditDefaultsOnly, Category="Effects")
+	float ImpactShakeOuterRadius;
 	
 	UFUNCTION()
 	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

@@ -14,6 +14,9 @@ class DRAGONROGUE_API ADaMagicProjectile : public ADaProjectile
 
 protected:
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage")
+	float DamageAmount;
+	
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName PrimaryHandSocketName;
 

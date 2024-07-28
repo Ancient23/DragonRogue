@@ -34,30 +34,26 @@ ADaProjectile::ADaProjectile()
 
 	FlightSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("FlightSoundComp"));
 	FlightSoundComp->SetupAttachment(RootComponent);
-
-	DamageAmount = 0.f;
+	
+	ImpactShakeInnerRadius = 0.0f;
+	ImpactShakeOuterRadius = 1500.0f;
+	
 }
 
 void ADaProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor && OtherActor != GetInstigator() && DamageAmount>0.f)
-	{
-		if (UDaGameplayFunctionLibrary::ApplyDamage(GetInstigator(), OtherActor, DamageAmount))
-		{
-			LOG("Damaged Actor");
-		}
-		Explode();
-	}
+	Explode();
 }
 
 void ADaProjectile::Explode_Implementation()
 {
-	if (IsValid(this))
+	if (ensure(IsValid(this)))
 	{
 		FlightSoundComp->Stop();
 		
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), GetActorRotation());
 		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+		UGameplayStatics::PlayWorldCameraShake(GetWorld(), ImpactShake, GetActorLocation(), ImpactShakeInnerRadius, ImpactShakeOuterRadius);
 
 		Destroy();
 	}
