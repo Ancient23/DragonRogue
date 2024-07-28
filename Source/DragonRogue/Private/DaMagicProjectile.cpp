@@ -30,8 +30,8 @@ void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 		if (UDaGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{
 			UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraHitVFX, OtherActor->GetActorLocation(), 100.f, 1000.f);
-			Explode();
 		}
+		Explode();
 	}
 }
 

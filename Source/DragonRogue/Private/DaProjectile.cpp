@@ -7,6 +7,7 @@
 
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "DragonRogue/DragonRogue.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -43,8 +44,9 @@ void ADaProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherA
 	{
 		if (UDaGameplayFunctionLibrary::ApplyDamage(GetInstigator(), OtherActor, DamageAmount))
 		{
-			Explode();
+			LOG("Damaged Actor");
 		}
+		Explode();
 	}
 }
 
