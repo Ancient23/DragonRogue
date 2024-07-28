@@ -51,6 +51,14 @@ bool UDaActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 	{
 		if (Action && Action->ActionName == ActionName)
 		{
+			if (!Action->CanStart(Instigator))
+			{
+				FString DebugMsg = FString::Printf(TEXT("Failed to run: %s"), *ActionName.ToString());
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+				
+				continue;
+			}
+			
 			Action->StartAction(Instigator);
 			return true;
 		}
@@ -64,8 +72,11 @@ bool UDaActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	{
 		if (Action && Action->ActionName == ActionName)
 		{
-			Action->StopAction(Instigator);
-			return true;
+			if (Action->IsRunning())
+			{
+				Action->StopAction(Instigator);
+				return true;
+			}
 		}
 	}
 	return false;
