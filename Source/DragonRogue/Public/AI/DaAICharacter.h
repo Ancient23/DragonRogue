@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "DaAICharacter.generated.h"
 
+class UDaActionComponent;
 class UDaAttributeComponent;
 class UPawnSensingComponent;
 class UUserWidget;
@@ -40,6 +41,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UDaAttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UDaActionComponent* ActionComp;
 	
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);

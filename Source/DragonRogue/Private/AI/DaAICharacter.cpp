@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "BrainComponent.h"
+#include "DaActionComponent.h"
 #include "DaAttributeComponent.h"
 #include "DaWorldUserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -21,6 +22,8 @@ ADaAICharacter::ADaAICharacter()
 	
 	AttributeComp = CreateDefaultSubobject<UDaAttributeComponent>("AttributeComp");
 
+	ActionComp = CreateDefaultSubobject<UDaActionComponent>("ActionComp");
+	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);

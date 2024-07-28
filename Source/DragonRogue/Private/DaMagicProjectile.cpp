@@ -3,7 +3,7 @@
 
 #include "DaMagicProjectile.h"
 
-#include "DaAttributeComponent.h"
+#include "DaActionComponent.h"
 #include "DaCharacter.h"
 #include "DaGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
@@ -25,8 +25,19 @@ ADaMagicProjectile::ADaMagicProjectile()
 
 void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	if (OtherActor && OtherActor->GetComponentByClass(UDaAttributeComponent::StaticClass()))
+	if (OtherActor && OtherActor != GetInstigator())
 	{
+		// Parry
+		UDaActionComponent* ActionComp = Cast<UDaActionComponent>(OtherActor->GetComponentByClass(UDaActionComponent::StaticClass()));
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
+		{
+			// Movement component has bRotationFollowsVelocity set to true, so we can simply invert velocity
+			// Set New instigator so our check above wont fail after Parry is complete
+			MovementComp->Velocity = -MovementComp->Velocity;
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
+		}
+		
 		if (UDaGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{
 			Explode();

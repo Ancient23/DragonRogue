@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DaProjectile.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "DaMagicProjectile.generated.h"
 
@@ -14,8 +15,11 @@ class DRAGONROGUE_API ADaMagicProjectile : public ADaProjectile
 
 protected:
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage")
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
 	float DamageAmount;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	FGameplayTag ParryTag;
 	
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName PrimaryHandSocketName;
