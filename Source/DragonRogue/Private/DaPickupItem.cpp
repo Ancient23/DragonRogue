@@ -72,13 +72,15 @@ void ADaPickupItem::ActOnInteraction(AActor* InstigatorActor)
 
 void ADaPickupItem::FadeMesh()
 {
-	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 0.1f);
+	BaseMeshComp->SetVisibility(false);
+	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 0.2f);
 	EffectComp->Deactivate();
 	IdleSoundComp->Stop();
 }
 
 void ADaPickupItem::RespawnItem()
 {
+	BaseMeshComp->SetVisibility(true);
 	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 1.f);
 	bIsActive = true;
 	EffectComp->Activate();
