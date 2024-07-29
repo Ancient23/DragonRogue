@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "DaGameModeBase.generated.h"
 
+class ADaPickupItem;
+
 namespace EEnvQueryStatus
 {
 	enum Type : int;
@@ -28,6 +30,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Credits")
 	float CreditsPerKill;
+
+	UPROPERTY(EditDefaultsOnly, Category="Pickups")
+	UEnvQuery* SpawnItemQuery;
+
+	UPROPERTY(EditDefaultsOnly, Category="Pickups")
+	TArray<TSubclassOf<ADaPickupItem>> ItemClasses;
 	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	TSubclassOf<AActor> MinionClass;
@@ -47,8 +55,11 @@ protected:
 	void SpawnBotTimerElapsed();
 
 	UFUNCTION()
-	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
+	UFUNCTION()
+	void OnSpawnItemQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
 	

@@ -5,6 +5,7 @@
 
 #include "DaAttributeComponent.h"
 #include "DaCharacter.h"
+#include "DaPickupItem.h"
 #include "DaPlayerState.h"
 #include "AI/DaAICharacter.h"
 #include "DragonRogue/DragonRogue.h"
@@ -14,6 +15,7 @@
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("da.SpawnBots"), true, TEXT("Enable Spawning of Bots with Timer"), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarDebugSpawnBots(TEXT("da.DrawDebugSpawnBots"), false, TEXT("Draw Debug Spheres showing location where Bots spawned"), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarDebugSpawnItems(TEXT("da.DrawDebugSpawnItems"), true, TEXT("Draw Debug Spheres showing location where Items spawned"), ECVF_Cheat);
 
 ADaGameModeBase::ADaGameModeBase()
 {
@@ -26,7 +28,55 @@ void ADaGameModeBase::StartPlay()
 	Super::StartPlay();
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ADaGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
+
+	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnItemQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
+	if (ensure(QueryInstance))
+	{
+		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ADaGameModeBase::OnSpawnItemQueryCompleted);
+	}
+}
+
+void ADaGameModeBase::OnSpawnItemQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
+	EEnvQueryStatus::Type QueryStatus)
+{
+	if (QueryStatus != EEnvQueryStatus::Success)
+	{
+		LOG_WARNING("Spawn ITEM EQS Query Failed");
+		return;
+	}
+
+	// TArray<FGameplayTag> Tags;
+	// int32 TagCount = ItemClasses.GetKeys(Tags);
+	// if (TagCount==0){
+	// 	LOG_WARNING("Spawn ITEM Failed, Tags and Item classes not Defined in Gamemode");
+	// 	return;
+	// }
+	int32 PickupTypes = ItemClasses.Num();
+	int32 CurrentType = 0;
+	if (PickupTypes==0)
+	{
+		LOG_WARNING("Spawn ITEM Failed, Item classes not Defined in Gamemode");
+		return;
+	}
 	
+	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
+	for (FVector Loc : Locations)
+	{
+		// Raise above ground level
+		Loc.Z += 100.0f;
+		
+		GetWorld()->SpawnActor<ADaPickupItem>(ItemClasses[CurrentType++], Loc, FRotator::ZeroRotator);
+		if (CurrentType == PickupTypes)
+		{
+			CurrentType=0;
+		}
+		
+		if (CVarDebugSpawnItems.GetValueOnGameThread())
+		{
+			DrawDebugSphere(GetWorld(), Loc, 50.0f, 20, FColor::Yellow, false, 60.f);
+			FString DebugMsg = FString::Printf(TEXT("Spawned Item at Location: %s"), *Loc.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);		}
+	}
 }
 
 void ADaGameModeBase::SpawnBotTimerElapsed()
@@ -66,11 +116,11 @@ void ADaGameModeBase::SpawnBotTimerElapsed()
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if (ensure(QueryInstance))
 	{
-		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ADaGameModeBase::OnQueryCompleted);
+		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ADaGameModeBase::OnSpawnBotQueryCompleted);
 	}
 }
 
-void ADaGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
+void ADaGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
 	EEnvQueryStatus::Type QueryStatus)
 {
 	if (QueryStatus != EEnvQueryStatus::Success)
