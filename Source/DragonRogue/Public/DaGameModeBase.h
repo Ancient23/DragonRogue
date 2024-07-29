@@ -26,6 +26,9 @@ class DRAGONROGUE_API ADaGameModeBase : public AGameModeBase
 
 protected:
 
+	UPROPERTY(EditAnywhere, Category="Credits")
+	float CreditsPerKill;
+	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	TSubclassOf<AActor> MinionClass;
 	

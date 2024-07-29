@@ -18,6 +18,7 @@ static TAutoConsoleVariable<bool> CVarDebugSpawnBots(TEXT("da.DrawDebugSpawnBots
 ADaGameModeBase::ADaGameModeBase()
 {
 	SpawnTimerInterval=2.0f;
+	CreditsPerKill = 10.0f;
 }
 
 void ADaGameModeBase::StartPlay()
@@ -123,8 +124,8 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		// AI Character was killed. Grant Credits to player
 		ADaPlayerState* PlayerState = Cast<ADaPlayerState>(PlayerActor->GetPlayerState());
 		ensureAlways(PlayerState);
-		PlayerState->AdjustCredits(10);
-		LOG("OnActorKilled: Killer: %s gets 10 credits", *GetNameSafe(KillerActor));
+		PlayerState->AdjustCredits(CreditsPerKill);
+		LOG("OnActorKilled: Killer: %s gets %f credits", *GetNameSafe(KillerActor), CreditsPerKill);
 	}
 
 	LOG("OnActorKilled: Victim: %s, Killer: %s", *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
