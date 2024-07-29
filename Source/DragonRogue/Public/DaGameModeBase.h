@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/GameModeBase.h"
 #include "DaGameModeBase.generated.h"
 
@@ -35,7 +36,7 @@ protected:
 	UEnvQuery* SpawnItemQuery;
 
 	UPROPERTY(EditDefaultsOnly, Category="Pickups")
-	TArray<TSubclassOf<ADaPickupItem>> ItemClasses;
+	TMap<FGameplayTag, TSubclassOf<ADaPickupItem>> ItemClasses;
 	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	TSubclassOf<AActor> MinionClass;

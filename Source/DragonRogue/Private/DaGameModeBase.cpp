@@ -12,6 +12,7 @@
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "EngineUtils.h"
+#include "DragonRogue/DaConstants.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("da.SpawnBots"), true, TEXT("Enable Spawning of Bots with Timer"), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarDebugSpawnBots(TEXT("da.DrawDebugSpawnBots"), false, TEXT("Draw Debug Spheres showing location where Bots spawned"), ECVF_Cheat);
@@ -45,13 +46,14 @@ void ADaGameModeBase::OnSpawnItemQueryCompleted(UEnvQueryInstanceBlueprintWrappe
 		return;
 	}
 
-	// TArray<FGameplayTag> Tags;
-	// int32 TagCount = ItemClasses.GetKeys(Tags);
-	// if (TagCount==0){
-	// 	LOG_WARNING("Spawn ITEM Failed, Tags and Item classes not Defined in Gamemode");
-	// 	return;
-	// }
-	int32 PickupTypes = ItemClasses.Num();
+	TArray<FGameplayTag> ItemTags;
+	int32 TagCount = ItemClasses.GetKeys(ItemTags);
+	if (TagCount==0){
+		LOG_WARNING("Spawn ITEM Failed, Tags and Item classes not Defined in Gamemode");
+		return;
+	}
+	
+	int32 PickupTypes = ItemTags.Num();
 	int32 CurrentType = 0;
 	if (PickupTypes==0)
 	{
@@ -62,20 +64,29 @@ void ADaGameModeBase::OnSpawnItemQueryCompleted(UEnvQueryInstanceBlueprintWrappe
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 	for (FVector Loc : Locations)
 	{
-		// Raise above ground level
-		Loc.Z += 100.0f;
-		
-		GetWorld()->SpawnActor<ADaPickupItem>(ItemClasses[CurrentType++], Loc, FRotator::ZeroRotator);
+		FGameplayTag CurrentTag = ItemTags[CurrentType++];
 		if (CurrentType == PickupTypes)
 		{
 			CurrentType=0;
 		}
 		
+		if (!CurrentTag.MatchesTag(TAG_PICKUP))
+		{
+			LOG_WARNING("Non Matching Pickup GameplayTag: %s", *CurrentTag.ToString());
+			continue;
+		}
+		
+		// Raise above ground level
+		Loc.Z += 100.0f;
+		GetWorld()->SpawnActor<ADaPickupItem>(ItemClasses[CurrentTag], Loc, FRotator::ZeroRotator);
+		
+		// Debug
 		if (CVarDebugSpawnItems.GetValueOnGameThread())
 		{
 			DrawDebugSphere(GetWorld(), Loc, 50.0f, 20, FColor::Yellow, false, 60.f);
-			FString DebugMsg = FString::Printf(TEXT("Spawned Item at Location: %s"), *Loc.ToString());
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);		}
+			FString DebugMsg = FString::Printf(TEXT("Spawned %s at Location: %s"), *CurrentTag.ToString(), *Loc.ToString());
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+		}
 	}
 }
 
