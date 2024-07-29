@@ -7,6 +7,7 @@
 #include "DaAttributeComponent.h"
 #include "DaGameplayFunctionLibrary.h"
 #include "DaInteractionComponent.h"
+#include "DaPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"

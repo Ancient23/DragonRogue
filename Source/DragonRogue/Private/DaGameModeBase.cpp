@@ -5,6 +5,7 @@
 
 #include "DaAttributeComponent.h"
 #include "DaCharacter.h"
+#include "DaPlayerState.h"
 #include "AI/DaAICharacter.h"
 #include "DragonRogue/DragonRogue.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -117,6 +118,13 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		FTimerDelegate Delegate;
 		Delegate.BindUObject(this, &ThisClass::RespawnPlayerElapsed, Player->GetController());
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespondDelay, false);
+	} else if (ADaCharacter* PlayerActor = Cast<ADaCharacter>(KillerActor))
+	{
+		// AI Character was killed. Grant Credits to player
+		ADaPlayerState* PlayerState = Cast<ADaPlayerState>(PlayerActor->GetPlayerState());
+		ensureAlways(PlayerState);
+		PlayerState->AdjustCredits(10);
+		LOG("OnActorKilled: Killer: %s gets 10 credits", *GetNameSafe(KillerActor));
 	}
 
 	LOG("OnActorKilled: Victim: %s, Killer: %s", *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
