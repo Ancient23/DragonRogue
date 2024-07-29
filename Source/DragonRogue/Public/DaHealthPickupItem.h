@@ -21,5 +21,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Health")
 	float HealthAmount;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Credits")
+	float Cost;
+	
 	virtual void ActOnInteraction(AActor* InstigatorActor) override;
 };
