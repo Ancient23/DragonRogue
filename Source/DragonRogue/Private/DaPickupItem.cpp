@@ -32,6 +32,8 @@ ADaPickupItem::ADaPickupItem()
 	TimeToHitParamName = "TimeToHit";
 	HitFlashColorParamName = "FlashColor";
 	AlphaVisibilityParamName = "AlphaVisible";
+
+	FlashColor = FVector(UE::Geometry::LinearColors::Green3f());
 }
 
 void ADaPickupItem::BeginPlay()
@@ -57,7 +59,7 @@ void ADaPickupItem::ActOnInteraction(AActor* InstigatorActor)
 		UGameplayStatics::SpawnEmitterAtLocation(this, PickupVFX, GetActorLocation(), GetActorRotation());
 		
 		BaseMeshComp->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-		BaseMeshComp->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Green3f()));
+		BaseMeshComp->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FlashColor);
 
 		// disable for a time, then re-enable after a time
 		FTimerHandle TimerHandle_DelayedHide;

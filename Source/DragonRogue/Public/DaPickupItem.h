@@ -32,6 +32,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName AlphaVisibilityParamName;
 
+	UPROPERTY(EditAnywhere, Category="Effects")
+	FVector FlashColor;
+	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	USphereComponent* SphereComp;
 	
