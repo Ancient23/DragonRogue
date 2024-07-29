@@ -4,25 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "DaPickupItem.h"
-#include "DaHealthPickupItem.generated.h"
+#include "DaCreditsPickupItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DRAGONROGUE_API ADaHealthPickupItem : public ADaPickupItem
+class DRAGONROGUE_API ADaCreditsPickupItem : public ADaPickupItem
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	ADaHealthPickupItem();
-	
-	UPROPERTY(EditAnywhere, Category="Health")
-	float HealthAmount;
-
 	UPROPERTY(EditAnywhere, Category="Credits")
-	float Cost;
+	float CreditsAmount;
 	
 	virtual void ActOnInteraction(AActor* InstigatorActor) override;
+
+	ADaCreditsPickupItem();
 };
