@@ -18,7 +18,7 @@ class DRAGONROGUE_API UDaAction : public UObject
 
 protected:
 
-	UFUNCTION(Blueprintable, Category="Action")
+	UFUNCTION(BlueprintCallable, Category="Action")
 	UDaActionComponent* GetOwningComponent() const;
 
 	UPROPERTY(EditDefaultsOnly, Category="Tags")
@@ -26,12 +26,14 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Tags")
 	FGameplayTagContainer BlockedTags;
-
 	
 	bool bIsRunning;
 	
 public:
 
+	UPROPERTY(EditDefaultsOnly, Category="Action")
+	bool bAutoStart;
+	
 	UFUNCTION(BlueprintCallable, Category="Action")
 	bool IsRunning() const;
 

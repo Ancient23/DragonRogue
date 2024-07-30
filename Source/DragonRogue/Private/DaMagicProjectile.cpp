@@ -4,6 +4,7 @@
 #include "DaMagicProjectile.h"
 
 #include "DaActionComponent.h"
+#include "DaActionEffect.h"
 #include "DaCharacter.h"
 #include "DaGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
@@ -41,6 +42,11 @@ void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 		if (UDaGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
 		{
 			Explode();
+
+			if (ActionComp)
+			{
+				ActionComp->AddAction(OtherActor, BurningActionClass);
+			}
 		}
 	}
 }

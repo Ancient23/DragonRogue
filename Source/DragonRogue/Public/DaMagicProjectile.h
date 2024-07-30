@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "DaMagicProjectile.generated.h"
 
+class UDaActionEffect;
+
 UCLASS()
 class DRAGONROGUE_API ADaMagicProjectile : public ADaProjectile
 {
@@ -20,6 +22,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
 	FGameplayTag ParryTag;
+
+	UPROPERTY(EditDefaultsOnly, Category="Effects")
+	TSubclassOf<UDaActionEffect> BurningActionClass;
 	
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName PrimaryHandSocketName;
