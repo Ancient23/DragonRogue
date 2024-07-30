@@ -29,7 +29,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Credits")
 	void AdjustCredits(float Delta);
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="Events")
 	FOnCreditsChanged OnCreditsChanged;
 	
 	ADaPlayerState();
