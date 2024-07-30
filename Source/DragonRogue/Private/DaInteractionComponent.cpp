@@ -3,20 +3,19 @@
 
 #include "DaInteractionComponent.h"
 #include "DaGameplayInterface.h"
+#include "DaWorldUserWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("da.InteractionDebugDraw"), false, TEXT("Enable Debug Lines For Interact Component."), ECVF_Cheat);
 
-
-// Sets default values for this component's properties
 UDaInteractionComponent::UDaInteractionComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
-}
+	TraceRadius = 30.0f;
+	TraceDistance = 500.0f;
 
+	CollisionChannel = ECC_WorldDynamic;
+}
 
 // Called when the game starts
 void UDaInteractionComponent::BeginPlay()
@@ -33,15 +32,15 @@ void UDaInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	FindBestInteractable();
 }
 
-void UDaInteractionComponent::PrimaryInteract()
+void UDaInteractionComponent::FindBestInteractable()
 {
 	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
 	
 	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(CollisionChannel);
 
 	AActor* MyOwner = GetOwner();
 
@@ -49,42 +48,85 @@ void UDaInteractionComponent::PrimaryInteract()
 	FRotator EyeRotation;
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 	
-	FVector End = EyeLocation + (EyeRotation.Vector()*1000);
-
-	//FHitResult Hit;
-	//bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(hit, EyeLocation, End, ObjectQueryParams);
+	FVector End = EyeLocation + (EyeRotation.Vector() * TraceDistance);
 
 	FCollisionShape Shape;
-	float Radius = 30.0f;
-	Shape.SetSphere(Radius);
+	Shape.SetSphere(TraceRadius);
 	
 	TArray<FHitResult> Hits;
 	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
 	
 	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
+	// Clear Focused Actor before hit
+	FocusedActor = nullptr;
+	
 	for (FHitResult Hit : Hits)
 	{
 		if (bDebugDraw)
 		{
-			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, TraceRadius, 32, LineColor, false, 1.0f);
 		}
 		
 		if (AActor* HitActor = Hit.GetActor())
 		{
 			if (HitActor->Implements<UDaGameplayInterface>())
 			{
-				if (APawn* MyPawn = Cast<APawn>(MyOwner))
-				{
-					IDaGameplayInterface::Execute_Interact(HitActor, MyPawn);
-					break;
-				}
+				FocusedActor = HitActor;
+				break;
 			}
 		}
 	}
 
+	// focus effect - loads a custom widget onto interactable
+	if (FocusedActor)
+	{
+		// Lazily load the widget when its first needed
+		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		{
+			DefaultWidgetInstance = CreateWidget<UDaWorldUserWidget>(GetWorld(), DefaultWidgetClass);
+		}
+
+		if (DefaultWidgetInstance)
+		{
+			DefaultWidgetInstance->AttachedActor = FocusedActor;
+
+			if (!DefaultWidgetInstance->IsInViewport())
+			{
+				DefaultWidgetInstance->AddToViewport();
+				if (bDebugDraw)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, "Added Widget to Viewport.");
+				}
+			}
+		}
+	}
+	else
+	{
+		if (DefaultWidgetInstance && DefaultWidgetInstance->IsInViewport())
+		{
+			DefaultWidgetInstance->RemoveFromParent();
+			if (bDebugDraw)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, "Removed Widget to Viewport.");
+			}
+		}
+	}
+	
 	if (bDebugDraw)
 	{
-		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 1.0f, 0, 2.0f);
 	}
+}
+
+
+void UDaInteractionComponent::PrimaryInteract()
+{
+	if (FocusedActor == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "DaInteractionComponent: No FocusedActor to Interact.");
+		return;
+	}
+	APawn* MyPawn = Cast<APawn>(GetOwner());
+	IDaGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
 }

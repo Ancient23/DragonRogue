@@ -7,6 +7,8 @@
 #include "DaInteractionComponent.generated.h"
 
 
+class UDaWorldUserWidget;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DRAGONROGUE_API UDaInteractionComponent : public UActorComponent
 {
@@ -19,8 +21,29 @@ public:
 	UDaInteractionComponent();
 
 protected:
+
+	void FindBestInteractable();
+	
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	AActor* FocusedActor;
+
+	UPROPERTY(EditDefaultsOnly, Category="Trace")
+	float TraceDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category="Trace")
+	float TraceRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category="Trace")
+	TEnumAsByte<ECollisionChannel> CollisionChannel;
+	
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<UDaWorldUserWidget> DefaultWidgetClass;
+
+	UPROPERTY()
+	UDaWorldUserWidget* DefaultWidgetInstance;
 
 public:	
 	// Called every frame
