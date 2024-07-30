@@ -60,6 +60,9 @@ void ADaGameModeBase::OnSpawnItemQueryCompleted(UEnvQueryInstanceBlueprintWrappe
 		LOG_WARNING("Spawn ITEM Failed, Item classes not Defined in Gamemode");
 		return;
 	}
+
+	//@TODO: Currently relying on EQS to filter out items, but we could just a get a grid and use something like "Algo/RandomShuffle.h" and pick the first X items from the array
+	// Also could introduce a spawn actor class that can be dropped in the map, instead of relying on GameMode's location (the QueryContext)
 	
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 	for (FVector Loc : Locations)
