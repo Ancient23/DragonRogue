@@ -20,6 +20,8 @@ void UDaActionComponent::BeginPlay()
 	{
 		AddAction(GetOwner(), ActionClass);
 	}
+
+	bHasBegunPlay = true;
 }
 
 
@@ -95,4 +97,17 @@ bool UDaActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 		}
 	}
 	return false;
+}
+
+float UDaActionComponent::GetActionCostByName(FName ActionName)
+{
+	for (UDaAction* Action : Actions)
+	{
+		if (Action && Action->ActionName == ActionName)
+		{
+			return Action->CostToActivate;
+		}
+	}
+
+	return 0.0f;
 }

@@ -106,7 +106,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable, Category="Effects")
+	bool IsRageActionAvailable() const;
+	
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.0f);
 
+	UFUNCTION(Exec)
+	void RageBoostMax();
 };

@@ -14,6 +14,10 @@ UDaAttributeComponent::UDaAttributeComponent()
 	Health = 100.0f;
 	HealthMax = 200.0f;
 	LowHealthThreshold = 20.0f;
+
+	Rage = 0.0f;
+	RageMax = 100.0f;
+	RageMultiplier = 0.5f; // multiplied by amount in AddRage
 	
 	bIsAlive = true;
 }
@@ -114,6 +118,70 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	}
 	
 	return ActualDelta != 0;
+}
+
+float UDaAttributeComponent::AddRage(float Amount)
+{
+	float ActualDelta = 0.0f;
+	if (ensure(Amount > 0.0f))
+	{
+		float OldRage = Rage;
+		Rage += Amount*RageMultiplier;
+		Rage = FMath::Clamp(Rage, 0, RageMax);
+		ActualDelta = Rage - OldRage;
+
+		if (ActualDelta > 0.0f)
+		{
+			OnRageChanged.Broadcast(this, Rage, ActualDelta);
+		}
+	}
+	return ActualDelta;
+}
+
+bool UDaAttributeComponent::UseRage(float Amount)
+{
+	if (ensure(Amount > 0.0f))
+	{
+		float OldRage = Rage;
+		Rage -= Amount;
+		Rage = FMath::Clamp(Rage, 0, RageMax);
+		float ActualDelta = OldRage - Rage;
+
+		if (ActualDelta > 0.0f)
+		{
+			OnRageChanged.Broadcast(this, Rage, -ActualDelta);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+float UDaAttributeComponent::SetRageToMax()
+{
+	float ActualDelta = 0.0f;
+	if (Rage < RageMax)
+	{
+		float OldRage = Rage;
+		Rage = RageMax;
+		ActualDelta = Rage - OldRage;
+		if (ActualDelta > 0.0f)
+		{
+			OnRageChanged.Broadcast(this, Rage, ActualDelta);
+		}
+	}
+	return ActualDelta;
+}
+
+float UDaAttributeComponent::GetRageMax() const
+{
+	return RageMax;
+}
+
+float UDaAttributeComponent::GetRage() const
+{
+	return Rage;
 }
 
 bool UDaAttributeComponent::Kill(AActor* InstigatorActor)

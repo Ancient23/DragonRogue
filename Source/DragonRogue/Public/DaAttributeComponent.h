@@ -7,6 +7,8 @@
 #include "DaAttributeComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, UDaAttributeComponent*, OwningComp, float, NewHealth, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRageChanged, UDaAttributeComponent*, OwningComp, float, NewRage, float, Delta);
+
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DRAGONROGUE_API UDaAttributeComponent : public UActorComponent
@@ -30,6 +32,15 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
+	float Rage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
+	float RageMax;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
+	float RageMultiplier;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
 	float Health;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
@@ -43,25 +54,42 @@ protected:
 	//@TODO: HealthMax, Stamina, Strength
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Attributes")
 	bool Kill(AActor* InstigatorActor);
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Attributes")
 	bool IsAlive() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Attributes")
 	bool LowHealth() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Attributes")
 	float GetHealthMax() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Attributes")
 	float GetHealth() const;
 	
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="Attributes")
 	FOnHealthChanged OnHealthChanged;
 	
 	UFUNCTION(BlueprintCallable, Category="Attributes")
 	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
+
+	UFUNCTION(BlueprintCallable, Category="Attributes")
+	float GetRageMax() const;
+
+	UFUNCTION(BlueprintCallable, Category="Attributes")
+	float GetRage() const;
+
+	UFUNCTION(BlueprintCallable, Category="Attributes")
+	float AddRage(float Amount);
+
+	UFUNCTION(BlueprintCallable, Category="Attributes")
+	bool UseRage(float Amount);
 	
+	UFUNCTION(BlueprintCallable, Category="Attributes")
+	float SetRageToMax();
+	
+	UPROPERTY(BlueprintAssignable, Category="Attributes")
+	FOnRageChanged OnRageChanged;
 };

@@ -27,7 +27,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Tags")
 	FGameplayTagContainer BlockedTags;
 	
-	bool bIsRunning;
+	bool bIsRunning = false;
 	
 public:
 
@@ -37,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Action")
 	bool IsRunning() const;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Action")
+	float CostToActivate = 0.0f;
+	
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 	bool CanStart(AActor* Instigator);
 	

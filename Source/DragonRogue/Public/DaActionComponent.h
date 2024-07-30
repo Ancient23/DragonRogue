@@ -31,6 +31,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
+
+	UFUNCTION(BlueprintCallable, Category="Actions")
+	float GetActionCostByName(FName ActionName);
 	
 	UDaActionComponent();
 
@@ -47,5 +50,5 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	bool bHasBegunPlay = false;
 };

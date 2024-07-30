@@ -147,7 +147,17 @@ void ADaCharacter::PrimaryAttack()
 
 void ADaCharacter::SecondaryAttack()
 {
-	ActionComp->StartActionByName(this, "SecondaryAttack");
+	float RageCost = ActionComp->GetActionCostByName("SecondaryAttack");
+	if (RageCost > 0.0f && AttributeComp->GetRage() >= RageCost)
+	{
+		if (ActionComp->StartActionByName(this, "SecondaryAttack"))
+		{
+			AttributeComp->UseRage(RageCost);
+		}
+	} else if (RageCost == 0.0f)
+	{
+		ActionComp->StartActionByName(this, "SecondaryAttack");
+	}
 }
 
 void ADaCharacter::Dash()
@@ -165,15 +175,21 @@ void ADaCharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponen
 {
 	if (NewHealth <= 0.0f && Delta < 0.0f)
 	{
+		// Death
 		APlayerController* PC = Cast<APlayerController>(GetController());
 		DisableInput(PC);
 	}
 	else if (Delta < 0.0f)
 	{
+		// Damage Effects
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Red3f()));
-	} else if (Delta > 0.0f)
+		
+		OwningComp->AddRage(FMath::Abs(Delta));
+	}
+	else if (Delta > 0.0f)
 	{
+		// Healing Effects
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Green3f()));
 	}
@@ -234,8 +250,32 @@ void ADaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	}
 }
 
+bool ADaCharacter::IsRageActionAvailable() const
+{
+	if (!ActionComp->bHasBegunPlay)
+	{
+		return false;
+	}
+	
+	float RageCost = ActionComp->GetActionCostByName("SecondaryAttack");
+	if (RageCost > 0.0f && AttributeComp->GetRage() >= RageCost)
+	{
+		return true;
+	}
+	else if (RageCost == 0.0f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void ADaCharacter::HealSelf(float Amount /* = 100 */)
 {
 	UDaGameplayFunctionLibrary::ApplyHealing(this, this, Amount);
 }
 
+void ADaCharacter::RageBoostMax()
+{
+	AttributeComp->SetRageToMax();
+}
