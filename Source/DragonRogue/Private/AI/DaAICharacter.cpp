@@ -31,6 +31,8 @@ ADaAICharacter::ADaAICharacter()
 	
 	TimeToHitParamName = "TimeToHit";
 	HitFlashColorParamName = "FlashColor";
+
+	PlayerSeenEmoteTime = 6.0f;
 }
 
 void ADaAICharacter::PostInitializeComponents()
@@ -44,10 +46,35 @@ void ADaAICharacter::PostInitializeComponents()
 
 void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 {
+	if (IsKnownTargetActor(Pawn))
+	{
+		return;
+	}
+	
 	SetTargetActor(Pawn); //@TODO: Toggle mode to set player only vs all characters so game designers can choose
 
-	//@TODO: Add some cool Widget or emote to NPC to signify when they've spotted the player
-	DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 2.0f, true);
+	//DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 2.0f, true);
+
+	// Add some cool Widget or emote to NPC to signify when they've spotted the player
+	if (PlayerSeenWidget == nullptr)
+	{
+		PlayerSeenWidget = CreateWidget<UDaWorldUserWidget>(GetWorld(), PlayerSeenWidgetClass);
+		if (PlayerSeenWidget)
+		{
+			PlayerSeenWidget->AttachedActor = this;
+			PlayerSeenWidget->AddToViewport();
+
+			FTimerHandle TimerHandle_PlayerSeenElapsed;
+			GetWorldTimerManager().SetTimer(TimerHandle_PlayerSeenElapsed, this, &ADaAICharacter::PlayerSeenWidgetTimeExpired, PlayerSeenEmoteTime );
+		}
+	}
+}
+
+void ADaAICharacter::PlayerSeenWidgetTimeExpired()
+{
+	PlayerSeenWidget->RemoveFromParent();
+	PlayerSeenWidget->AttachedActor = nullptr;
+	PlayerSeenWidget = nullptr;
 }
 
 void ADaAICharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth,
@@ -113,6 +140,20 @@ void ADaAICharacter::SetTargetActor(AActor* NewTarget)
 	{
 		AIController->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
 	}
+}
+
+bool ADaAICharacter::IsKnownTargetActor(AActor* Actor)
+{
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController)
+	{
+		AActor* TargetActor = Cast<AActor>(AIController->GetBlackboardComponent()->GetValueAsObject("TargetActor"));
+		if (TargetActor == Actor)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 

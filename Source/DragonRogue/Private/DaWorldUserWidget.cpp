@@ -15,7 +15,7 @@ void UDaWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	if (!IsValid(AttachedActor))
 	{
 		RemoveFromParent();
-		LOG_WARNING("AttachedActor no longer valid, removing health widget");
+		LOG_WARNING("AttachedActor no longer valid, removing UDaWorldUserWidget derived widget");
 		return;
 	}
 	

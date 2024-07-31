@@ -29,6 +29,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+	UPROPERTY(VisibleDefaultsOnly, Category="UI")
+	UDaWorldUserWidget* PlayerSeenWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<UUserWidget> PlayerSeenWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	float PlayerSeenEmoteTime;
 	
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName TimeToHitParamName;
@@ -51,7 +60,10 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth, float Delta);
 
+	bool IsKnownTargetActor(AActor* Actor);
 	void SetTargetActor(AActor* NewTarget);
 
+	void PlayerSeenWidgetTimeExpired();
+	
 	virtual void PostInitializeComponents() override;
 };
