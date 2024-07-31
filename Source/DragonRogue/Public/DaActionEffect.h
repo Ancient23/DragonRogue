@@ -24,6 +24,7 @@ public:
 
 protected:
 
+	// NOTE: Duration == 0 will be infinite. Stop Action wont get called.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Effects")
 	float Duration;
 
