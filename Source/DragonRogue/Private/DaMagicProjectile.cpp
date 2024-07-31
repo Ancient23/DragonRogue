@@ -43,7 +43,7 @@ void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 		{
 			Explode();
 
-			if (ActionComp)
+			if (ActionComp && BurningActionClass)
 			{
 				ActionComp->AddAction(OtherActor, BurningActionClass);
 			}
