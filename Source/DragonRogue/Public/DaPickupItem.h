@@ -55,17 +55,25 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn Settings")
 	bool bShouldRespawn;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn Settings")
+	bool bShouldRespawnOnDeath;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Respawn Settings")
 	float RespawnDelay;
 
+	UFUNCTION()
+	void OnPlayerRespawn(APawn* OldPawn, APawn* NewPawn);
+	
 	bool bIsActive;
 	
 	virtual void ActOnInteraction(AActor* InstigatorActor);
-
-	virtual void BeginPlay() override;
 	
-	void FadeMesh();
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void FadeMesh(AActor* InstigatorActor);
+
 	void RespawnItem();
 };
 

@@ -3,6 +3,7 @@
 
 #include "DaPickupItem.h"
 
+#include "DaCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -27,6 +28,7 @@ ADaPickupItem::ADaPickupItem()
 	IdleSoundComp->SetupAttachment(RootComponent);
 
 	bShouldRespawn = true;
+	bShouldRespawnOnDeath = false;
 	RespawnDelay = 10.0f;
 	bIsActive = true;
 
@@ -64,18 +66,33 @@ void ADaPickupItem::ActOnInteraction(AActor* InstigatorActor)
 
 		// disable for a time, then re-enable if requested
 		FTimerHandle TimerHandle_DelayedHide;
-		GetWorldTimerManager().SetTimer(TimerHandle_DelayedHide, this, &ADaPickupItem::FadeMesh, 0.25f );
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, "FadeMesh", InstigatorActor);
+
+		GetWorldTimerManager().SetTimer(TimerHandle_DelayedHide, Delegate, 0.25f, false );
 	}
 }
 
-void ADaPickupItem::FadeMesh()
+void ADaPickupItem::OnPlayerRespawn(APawn* OldPawn, APawn* NewPawn)
+{
+	// start a 10 second timer to re-enable item if its still available to be picked up
+	FTimerHandle TimerHandle_DelayedActivate;
+	GetWorldTimerManager().SetTimer(TimerHandle_DelayedActivate, this, &ADaPickupItem::RespawnItem, RespawnDelay );
+}
+
+void ADaPickupItem::FadeMesh(AActor* InstigatorActor)
 {
 	BaseMeshComp->SetVisibility(false);
 	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 0.2f);
 	EffectComp->Deactivate();
 	IdleSoundComp->Stop();
-
-	if (bShouldRespawn)
+	
+	if (bShouldRespawnOnDeath)
+	{
+		Cast<ADaCharacter>(InstigatorActor)->GetController()->OnPossessedPawnChanged.AddDynamic(this, &ADaPickupItem::OnPlayerRespawn);
+	}
+	// destroy if this wont respawn
+	else if (bShouldRespawn)
 	{
 		// start a 10 second timer to re-enable item if its still available to be picked up
 		FTimerHandle TimerHandle_DelayedActivate;
