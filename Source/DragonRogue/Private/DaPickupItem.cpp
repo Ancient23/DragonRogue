@@ -3,9 +3,9 @@
 
 #include "DaPickupItem.h"
 
-#include "DaCharacter.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Util/ColorConstants.h"
@@ -89,7 +89,7 @@ void ADaPickupItem::FadeMesh(AActor* InstigatorActor)
 	
 	if (bShouldRespawnOnDeath)
 	{
-		Cast<ADaCharacter>(InstigatorActor)->GetController()->OnPossessedPawnChanged.AddDynamic(this, &ADaPickupItem::OnPlayerRespawn);
+		Cast<ACharacter>(InstigatorActor)->GetController()->OnPossessedPawnChanged.AddDynamic(this, &ADaPickupItem::OnPlayerRespawn);
 	}
 	// destroy if this wont respawn
 	else if (bShouldRespawn)
