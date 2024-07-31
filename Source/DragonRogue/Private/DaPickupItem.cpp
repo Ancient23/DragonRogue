@@ -26,6 +26,7 @@ ADaPickupItem::ADaPickupItem()
 	IdleSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("IdleSoundComp"));
 	IdleSoundComp->SetupAttachment(RootComponent);
 
+	bShouldRespawn = true;
 	RespawnDelay = 10.0f;
 	bIsActive = true;
 
@@ -61,14 +62,9 @@ void ADaPickupItem::ActOnInteraction(AActor* InstigatorActor)
 		BaseMeshComp->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		BaseMeshComp->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FlashColor);
 
-		// disable for a time, then re-enable after a time
+		// disable for a time, then re-enable if requested
 		FTimerHandle TimerHandle_DelayedHide;
 		GetWorldTimerManager().SetTimer(TimerHandle_DelayedHide, this, &ADaPickupItem::FadeMesh, 0.25f );
-		
-		// start a 10 second timer to re-enable item if its still available to be picked up
-		FTimerHandle TimerHandle_DelayedActivate;
-		GetWorldTimerManager().SetTimer(TimerHandle_DelayedActivate, this, &ADaPickupItem::RespawnItem, RespawnDelay );
-
 	}
 }
 
@@ -78,6 +74,17 @@ void ADaPickupItem::FadeMesh()
 	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 0.2f);
 	EffectComp->Deactivate();
 	IdleSoundComp->Stop();
+
+	if (bShouldRespawn)
+	{
+		// start a 10 second timer to re-enable item if its still available to be picked up
+		FTimerHandle TimerHandle_DelayedActivate;
+		GetWorldTimerManager().SetTimer(TimerHandle_DelayedActivate, this, &ADaPickupItem::RespawnItem, RespawnDelay );
+	}
+	else
+	{
+		Destroy();
+	}
 }
 
 void ADaPickupItem::RespawnItem()

@@ -33,6 +33,16 @@ void UDaActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 }
 
+UDaActionComponent* UDaActionComponent::GetActions(AActor* FromActor)
+{
+	if (FromActor)
+	{
+		return Cast<UDaActionComponent>(FromActor->GetComponentByClass(UDaActionComponent::StaticClass()));
+	}
+
+	return nullptr;
+}
+
 void UDaActionComponent::AddAction(AActor* Instigator, TSubclassOf<UDaAction> ActionClass)
 {
 	if (!ensure(ActionClass))
@@ -96,6 +106,19 @@ bool UDaActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 			}
 		}
 	}
+	return false;
+}
+
+bool UDaActionComponent::ContainsActionWithName(FName ActionName)
+{
+	for (UDaAction* Action : Actions)
+	{
+		if (Action && Action->ActionName == ActionName)
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 

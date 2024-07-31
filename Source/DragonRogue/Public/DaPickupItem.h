@@ -53,6 +53,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category= "Sound FX")
 	USoundBase* PickupSound;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn Settings")
+	bool bShouldRespawn;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Respawn Settings")
 	float RespawnDelay;
 

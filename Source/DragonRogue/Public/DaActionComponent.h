@@ -17,6 +17,9 @@ class DRAGONROGUE_API UDaActionComponent : public UActorComponent
 
 public:
 
+	UFUNCTION(BlueprintCallable, Category="Actions")
+	static UDaActionComponent* GetActions(AActor* FromActor);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Tags")
 	FGameplayTagContainer ActiveGameplayTags;
 	
@@ -32,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
 
+	UFUNCTION(BlueprintCallable, Category="Actions")
+	bool ContainsActionWithName(FName ActionName);
+	
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	float GetActionCostByName(FName ActionName);
 	
