@@ -37,6 +37,8 @@ ADaPickupItem::ADaPickupItem()
 	AlphaVisibilityParamName = "AlphaVisible";
 
 	FlashColor = FVector(UE::Geometry::LinearColors::Green3f());
+
+	SetReplicates(true);
 }
 
 void ADaPickupItem::BeginPlay()

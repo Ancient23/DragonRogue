@@ -5,6 +5,7 @@
 
 #include "DaGameModeBase.h"
 #include "DragonRogue/DragonRogue.h"
+#include "Net/UnrealNetwork.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("da.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for Attribute Component"), ECVF_Cheat);
 
@@ -20,7 +21,28 @@ UDaAttributeComponent::UDaAttributeComponent()
 	RageMultiplier = 0.5f; // multiplied by amount in AddRage
 	
 	bIsAlive = true;
+
+	SetIsReplicatedByDefault(true);
 }
+
+void UDaAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UDaAttributeComponent, Health);
+	DOREPLIFETIME(UDaAttributeComponent, HealthMax);
+	DOREPLIFETIME(UDaAttributeComponent, LowHealthThreshold);
+	
+	DOREPLIFETIME(UDaAttributeComponent, Rage);
+	DOREPLIFETIME(UDaAttributeComponent, RageMax);
+	DOREPLIFETIME(UDaAttributeComponent, RageMultiplier);
+
+	DOREPLIFETIME(UDaAttributeComponent, bIsAlive);
+
+	//@TODO: Network Optimization using COND... 
+	//DOREPLIFETIME_CONDITION(UDaAttributeComponent, HealthMax, COND_InitialOnly);
+}
+
 
 UDaAttributeComponent* UDaAttributeComponent::GetAttributes(AActor* FromActor)
 {
@@ -98,8 +120,12 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	Health = FMath::Clamp(Health, 0, HealthMax);
 
 	float ActualDelta = Health - OldHealth;
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-
+	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+	if (ActualDelta != 0.0f)
+	{
+		MulticastHealthChanged_Implementation(InstigatorActor, Health, ActualDelta);
+	}
+	
 	if (ActualDelta < 0.0f && Health <= 0.f)
 	{
 		// dead
@@ -118,6 +144,11 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	}
 	
 	return ActualDelta != 0;
+}
+
+void UDaAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
 }
 
 float UDaAttributeComponent::AddRage(float Amount)
