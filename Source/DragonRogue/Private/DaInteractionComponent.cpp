@@ -17,22 +17,21 @@ UDaInteractionComponent::UDaInteractionComponent()
 	CollisionChannel = ECC_WorldDynamic;
 }
 
-// Called when the game starts
 void UDaInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
-
-// Called every frame
 void UDaInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FindBestInteractable();
+	APawn* MyPawn = Cast<APawn>(GetOwner());
+
+	if(MyPawn->IsLocallyControlled())
+	{
+		FindBestInteractable();
+	}
 }
 
 void UDaInteractionComponent::FindBestInteractable()
@@ -122,11 +121,16 @@ void UDaInteractionComponent::FindBestInteractable()
 
 void UDaInteractionComponent::PrimaryInteract()
 {
-	if (FocusedActor == nullptr)
+	ServerInteract(FocusedActor);
+}
+
+void UDaInteractionComponent::ServerInteract_Implementation(AActor* InFocus)
+{
+	if (InFocus == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "DaInteractionComponent: No FocusedActor to Interact.");
 		return;
 	}
 	APawn* MyPawn = Cast<APawn>(GetOwner());
-	IDaGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
+	IDaGameplayInterface::Execute_Interact(InFocus, MyPawn);
 }

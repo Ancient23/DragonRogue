@@ -3,6 +3,8 @@
 
 #include "DaItemChest.h"
 
+#include "Net/UnrealNetwork.h"
+
 // Sets default values
 ADaItemChest::ADaItemChest()
 {
@@ -13,12 +15,25 @@ ADaItemChest::ADaItemChest()
 	LidMesh->SetupAttachment(BaseMesh);
 
 	TargetPitch = 110;
+
+	SetReplicates(true);
 }
 
 void ADaItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
-	IDaGameplayInterface::Interact_Implementation(InstigatorPawn);
-
-	//LidMesh->SetRelativeRotation(FRotator(TargetPitch, 0, 0));
+	bLidOpened = !bLidOpened;
+	OnRep_LidOpened();
 }
 
+void ADaItemChest::OnRep_LidOpened()
+{
+	float CurrentPitch = bLidOpened ? TargetPitch : 0.0f;
+	LidMesh->SetRelativeRotation(FRotator(CurrentPitch, 0, 0));
+}
+
+void ADaItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADaItemChest, bLidOpened);
+}

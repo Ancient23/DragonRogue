@@ -22,6 +22,11 @@ public:
 
 protected:
 
+	// Reliable - TCP/IP like. Will resend until ACK, will wait until packets received in order
+	// Unreliable - UDPlike. Fire and forget... no need to wait (things that are constantly being updated should use this... 
+	UFUNCTION(Server, Reliable)
+	void ServerInteract(AActor* InFocus);
+	
 	void FindBestInteractable();
 	
 	// Called when the game starts
