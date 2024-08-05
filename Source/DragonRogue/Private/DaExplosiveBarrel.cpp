@@ -5,6 +5,7 @@
 #include "DaAttributeComponent.h"
 #include "AssetTypeCategories.h"
 #include "DaGameplayFunctionLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/PhysicsSettings.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
@@ -40,6 +41,8 @@ ADaExplosiveBarrel::ADaExplosiveBarrel()
 	RadialForceComp->SetupAttachment(StaticMeshComp);
 
 	DamageAmount = 50.0f;
+
+	SetReplicates(true);
 }
 
 void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -86,5 +89,12 @@ void ADaExplosiveBarrel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ADaExplosiveBarrel::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADaExplosiveBarrel, DamageAmount);
 }
 

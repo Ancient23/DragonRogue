@@ -24,7 +24,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	URadialForceComponent* RadialForceComp;
 
-	UPROPERTY(EditAnywhere, Category="Damage")
+	UPROPERTY(Replicated, EditAnywhere, Category="Damage")
 	float DamageAmount;
 	
 	// Called when the game starts or when spawned
@@ -35,6 +35,8 @@ protected:
 	UFUNCTION()
 	void OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
