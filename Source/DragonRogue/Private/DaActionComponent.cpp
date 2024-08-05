@@ -9,8 +9,9 @@
 UDaActionComponent::UDaActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-}
 
+	SetIsReplicatedByDefault(true);
+}
 
 void UDaActionComponent::BeginPlay()
 {
@@ -85,6 +86,12 @@ bool UDaActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 				
 				continue;
 			}
+
+			// Is Client?
+			if (!GetOwner()->HasAuthority())
+			{
+				ServerStartAction(Instigator, ActionName);
+			}
 			
 			Action->StartAction(Instigator);
 			return true;
@@ -134,3 +141,9 @@ float UDaActionComponent::GetActionCostByName(FName ActionName)
 
 	return 0.0f;
 }
+
+void UDaActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StartActionByName(Instigator, ActionName);
+}
+
