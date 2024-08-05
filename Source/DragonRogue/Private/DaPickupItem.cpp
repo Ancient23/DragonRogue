@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Util/ColorConstants.h"
 
@@ -114,4 +115,11 @@ void ADaPickupItem::RespawnItem()
 	EffectComp->Activate();
 	IdleSoundComp->Play();
 
+}
+
+void ADaPickupItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ADaPickupItem, bIsActive);
 }

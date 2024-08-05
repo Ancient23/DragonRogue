@@ -6,8 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "DaAttributeComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, UDaAttributeComponent*, OwningComp, float, NewHealth, float, Delta);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRageChanged, UDaAttributeComponent*, OwningComp, float, NewRage, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAttributeChanged, AActor*, InstigatorActor, UDaAttributeComponent*, OwningComp, float, NewAttribValue, float, Delta);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRageChanged, UDaAttributeComponent*, OwningComp, float, NewRage, float, Delta);
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -80,7 +80,7 @@ public:
 	float GetHealth() const;
 	
 	UPROPERTY(BlueprintAssignable, Category="Attributes")
-	FOnHealthChanged OnHealthChanged;
+	FOnAttributeChanged OnHealthChanged;
 	
 	UFUNCTION(BlueprintCallable, Category="Attributes")
 	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
@@ -101,5 +101,5 @@ public:
 	float SetRageToMax();
 	
 	UPROPERTY(BlueprintAssignable, Category="Attributes")
-	FOnRageChanged OnRageChanged;
+	FOnAttributeChanged OnRageChanged;
 };

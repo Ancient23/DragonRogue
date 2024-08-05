@@ -31,7 +31,8 @@ ADaAICharacter::ADaAICharacter()
 	
 	TimeToHitParamName = "TimeToHit";
 	HitFlashColorParamName = "FlashColor";
-
+	TargetActorKey = "TargetActor";
+	
 	PlayerSeenEmoteTime = 6.0f;
 }
 
@@ -46,7 +47,7 @@ void ADaAICharacter::PostInitializeComponents()
 
 void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	if (IsKnownTargetActor(Pawn))
+	if (GetTargetActor() == Pawn)
 	{
 		return;
 	}
@@ -62,7 +63,7 @@ void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 		if (PlayerSeenWidget)
 		{
 			PlayerSeenWidget->AttachedActor = this;
-			PlayerSeenWidget->AddToViewport();
+			PlayerSeenWidget->AddToViewport(10);
 
 			FTimerHandle TimerHandle_PlayerSeenElapsed;
 			GetWorldTimerManager().SetTimer(TimerHandle_PlayerSeenElapsed, this, &ADaAICharacter::PlayerSeenWidgetTimeExpired, PlayerSeenEmoteTime );
@@ -138,22 +139,18 @@ void ADaAICharacter::SetTargetActor(AActor* NewTarget)
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController)
 	{
-		AIController->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
+		AIController->GetBlackboardComponent()->SetValueAsObject(TargetActorKey, NewTarget);
 	}
 }
 
-bool ADaAICharacter::IsKnownTargetActor(AActor* Actor)
+AActor* ADaAICharacter::GetTargetActor()
 {
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (AIController)
 	{
-		AActor* TargetActor = Cast<AActor>(AIController->GetBlackboardComponent()->GetValueAsObject("TargetActor"));
-		if (TargetActor == Actor)
-		{
-			return true;
-		}
+		return Cast<AActor>(AIController->GetBlackboardComponent()->GetValueAsObject(TargetActorKey));
 	}
-	return false;
+	return nullptr;
 }
 
 

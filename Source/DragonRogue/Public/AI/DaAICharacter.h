@@ -53,6 +53,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UDaActionComponent* ActionComp;
+
+	UPROPERTY(VisibleDefaultsOnly, Category="AI")
+	FName TargetActorKey;
 	
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
@@ -60,7 +63,7 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth, float Delta);
 
-	bool IsKnownTargetActor(AActor* Actor);
+	AActor* GetTargetActor();
 	void SetTargetActor(AActor* NewTarget);
 
 	void PlayerSeenWidgetTimeExpired();

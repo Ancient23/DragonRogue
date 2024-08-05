@@ -45,7 +45,10 @@ void UDaActionEffect_Thorns::StartAction_Implementation(AActor* Instigator)
 	AActor *OwningActor = GetOwningComponent()->GetOwner();
 	UDaAttributeComponent* AttributeComp = UDaAttributeComponent::GetAttributes(OwningActor);
 
-	AttributeComp->OnHealthChanged.AddDynamic(this, &UDaActionEffect_Thorns::OnHealthChanged);
+	if (AttributeComp)
+	{
+		AttributeComp->OnHealthChanged.AddDynamic(this, &UDaActionEffect_Thorns::OnHealthChanged);
+	}
 }
 
 void UDaActionEffect_Thorns::StopAction_Implementation(AActor* Instigator)
@@ -55,9 +58,11 @@ void UDaActionEffect_Thorns::StopAction_Implementation(AActor* Instigator)
 	AActor *OwningActor = GetOwningComponent()->GetOwner();
 	UDaAttributeComponent* AttributeComp = UDaAttributeComponent::GetAttributes(OwningActor);
 
-	AttributeComp->OnHealthChanged.RemoveDynamic(this, &UDaActionEffect_Thorns::OnHealthChanged);
+	if (AttributeComp)
+	{
+		AttributeComp->OnHealthChanged.RemoveDynamic(this, &UDaActionEffect_Thorns::OnHealthChanged);
+	}
 }
-
 
 
 

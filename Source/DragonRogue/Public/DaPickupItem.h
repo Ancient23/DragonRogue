@@ -64,7 +64,8 @@ protected:
 
 	UFUNCTION()
 	void OnPlayerRespawn(APawn* OldPawn, APawn* NewPawn);
-	
+
+	UPROPERTY(Replicated)
 	bool bIsActive;
 	
 	virtual void ActOnInteraction(AActor* InstigatorActor);
@@ -75,6 +76,8 @@ protected:
 	void FadeMesh(AActor* InstigatorActor);
 
 	void RespawnItem();
+
+	
 };
 
 

@@ -163,7 +163,7 @@ float UDaAttributeComponent::AddRage(float Amount)
 
 		if (ActualDelta > 0.0f)
 		{
-			OnRageChanged.Broadcast(this, Rage, ActualDelta);
+			OnRageChanged.Broadcast(GetOwner(), this, Rage, ActualDelta);
 		}
 	}
 	return ActualDelta;
@@ -180,7 +180,7 @@ bool UDaAttributeComponent::UseRage(float Amount)
 
 		if (ActualDelta > 0.0f)
 		{
-			OnRageChanged.Broadcast(this, Rage, -ActualDelta);
+			OnRageChanged.Broadcast(GetOwner(),this, Rage, -ActualDelta);
 		}
 
 		return true;
@@ -199,7 +199,7 @@ float UDaAttributeComponent::SetRageToMax()
 		ActualDelta = Rage - OldRage;
 		if (ActualDelta > 0.0f)
 		{
-			OnRageChanged.Broadcast(this, Rage, ActualDelta);
+			OnRageChanged.Broadcast(GetOwner(),this, Rage, ActualDelta);
 		}
 	}
 	return ActualDelta;
