@@ -30,7 +30,8 @@ void UDaAction::StartAction_Implementation(AActor* Instigator)
 	UDaActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantTags);
 
-	bIsRunning = true;
+	RepData.bIsRunning = true;
+	RepData.Instigator = Instigator;
 }
 
 void UDaAction::StopAction_Implementation(AActor* Instigator)
@@ -40,23 +41,23 @@ void UDaAction::StopAction_Implementation(AActor* Instigator)
 	UDaActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantTags);
 
-	bIsRunning = false;
+	RepData.bIsRunning = false;
 }
 
 void UDaAction::OnRep_IsRunning()
 {
-	if (bIsRunning)
+	if (RepData.bIsRunning)
 	{
-		StartAction(nullptr);
+		StartAction(RepData.Instigator);
 	} else
 	{
-		StopAction(nullptr);
+		StopAction(RepData.Instigator);
 	}
 }
 
 bool UDaAction::IsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
 }
 
 UWorld* UDaAction::GetWorld() const
@@ -79,6 +80,6 @@ void UDaAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 {
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UDaAction, bIsRunning);
+	DOREPLIFETIME(UDaAction, RepData);
 }
 

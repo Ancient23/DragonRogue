@@ -8,6 +8,21 @@
 
 class UDaActionComponent;
 class UWorld;
+
+USTRUCT()
+struct FActionRepData
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	bool bIsRunning;
+
+	UPROPERTY()
+	AActor* Instigator;
+};
+
 /**
  * 
  */
@@ -29,7 +44,7 @@ protected:
 
 	// will set this directly on client that triggered it for instant player usability, other clients will get repNotify that will set this
 	UPROPERTY(ReplicatedUsing="OnRep_IsRunning")
-	bool bIsRunning = false;
+	FActionRepData RepData;
 
 	UFUNCTION()
 	void OnRep_IsRunning();
