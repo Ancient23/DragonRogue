@@ -23,12 +23,15 @@ void UDaAction_Projectile::StartAction_Implementation(AActor* Instigator)
 		// @TODO: Could use animation notify (instead of attack delay timer to time animation)
 		Character->PlayAnimMontage(AttackAnim);
 		UGameplayStatics::SpawnEmitterAttached(CastingEffect, Character->GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+	
+		if (Character->HasAuthority())
+		{
+			FTimerHandle TimerHandle_AttackDelay;
+			FTimerDelegate Delegate;
+			Delegate.BindUFunction(this, "AttackDelay_Elapsed", Character);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackDelay, Delegate, AttackAnimDelay, false);
+		}
 	}
-
-	FTimerHandle TimerHandle_AttackDelay;
-	FTimerDelegate Delegate;
-	Delegate.BindUFunction(this, "AttackDelay_Elapsed", Character);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackDelay, Delegate, AttackAnimDelay, false);
 }
 
 void UDaAction_Projectile::StopAction_Implementation(AActor* Instigator)
