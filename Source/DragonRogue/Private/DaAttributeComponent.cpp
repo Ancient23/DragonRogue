@@ -20,8 +20,6 @@ UDaAttributeComponent::UDaAttributeComponent()
 	RageMax = 100.0f;
 	RageMultiplier = 0.5f; // multiplied by amount in AddRage
 	
-	bIsAlive = true;
-
 	SetIsReplicatedByDefault(true);
 }
 
@@ -36,9 +34,7 @@ void UDaAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(UDaAttributeComponent, Rage);
 	DOREPLIFETIME(UDaAttributeComponent, RageMax);
 	DOREPLIFETIME(UDaAttributeComponent, RageMultiplier);
-
-	DOREPLIFETIME(UDaAttributeComponent, bIsAlive);
-
+	
 	//@TODO: Network Optimization using COND... 
 	//DOREPLIFETIME_CONDITION(UDaAttributeComponent, HealthMax, COND_InitialOnly);
 }
@@ -86,15 +82,7 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	
 	if (Delta < 0.0f)
 	{
-		// damage
-		
-		if (Health <= 0.f)
-		{
-			// Do nothing
-			return false;
-		}
-
-		// Globally increase all damage using CVar multpilier
+		// Globally increase all damage using CVar multiplier
 		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
 		if (DamageMultiplier != 1.0f)
 		{
@@ -102,45 +90,28 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 			Delta *= DamageMultiplier;
 		}
 	}
-	else if (Delta > 0.0f)
-	{
-		// Healing
-		if (Health >= HealthMax)
-		{
-			return false;
-		}
-	}
-	else
-	{
-		// 0 do nothing
-		return false;
-	}
+
 	float OldHealth = Health;
-	Health += Delta;
-	Health = FMath::Clamp(Health, 0, HealthMax);
+	float NewHealth = FMath::Clamp(Health+Delta, 0, HealthMax);
+	float ActualDelta = NewHealth - OldHealth;
 
-	float ActualDelta = Health - OldHealth;
-	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-	if (ActualDelta != 0.0f)
+	if (GetOwner()->HasAuthority())
 	{
-		MulticastHealthChanged_Implementation(InstigatorActor, Health, ActualDelta);
-	}
-	
-	if (ActualDelta < 0.0f && Health <= 0.f)
-	{
-		// dead
-		bIsAlive = false;
+		Health = NewHealth;
 
-		ADaGameModeBase* Gamemode = GetWorld()->GetAuthGameMode<ADaGameModeBase>();
-		if (Gamemode)
+		if (ActualDelta != 0.0f)
 		{
-			Gamemode->OnActorKilled(GetOwner(), InstigatorActor);
+			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
 		}
-	}
-	else if (OldHealth <= 0.f && Health > 0)
-	{
-		// revived
-		bIsAlive = true;
+
+		if (ActualDelta < 0.0f && Health == 0.f)
+		{
+			ADaGameModeBase* Gamemode = GetWorld()->GetAuthGameMode<ADaGameModeBase>();
+			if (Gamemode)
+			{
+				Gamemode->OnActorKilled(GetOwner(), InstigatorActor);
+			}
+		}
 	}
 	
 	return ActualDelta != 0;
@@ -222,7 +193,7 @@ bool UDaAttributeComponent::Kill(AActor* InstigatorActor)
 
 bool UDaAttributeComponent::IsAlive() const
 {
-	return bIsAlive;
+	return Health > 0.0f;
 }
 
 bool UDaAttributeComponent::LowHealth() const

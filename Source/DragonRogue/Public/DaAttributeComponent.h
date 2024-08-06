@@ -49,10 +49,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category="Attributes")
 	float LowHealthThreshold;
 
-	// state changes more useful as repNotify
-	UPROPERTY(Replicated)
-	bool bIsAlive;
-
 	// useful for broadcasting but more effects
 	// @FIXME: Mark As Unreliable and use bAsAlive as state
 	// Unreliable also considers relavancy based on distance for example
