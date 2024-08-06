@@ -127,6 +127,13 @@ bool UDaActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 		{
 			if (Action->IsRunning())
 			{
+
+				// Is Client?
+				if (!GetOwner()->HasAuthority())
+				{
+					ServerStopAction(Instigator, ActionName);
+				}
+				
 				Action->StopAction(Instigator);
 				return true;
 			}
@@ -164,6 +171,11 @@ float UDaActionComponent::GetActionCostByName(FName ActionName)
 void UDaActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
 {
 	StartActionByName(Instigator, ActionName);
+}
+
+void UDaActionComponent::ServerStopAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StopActionByName(Instigator, ActionName);
 }
 
 void UDaActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
