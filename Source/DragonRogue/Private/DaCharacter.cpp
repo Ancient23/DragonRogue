@@ -173,13 +173,7 @@ void ADaCharacter::PrimaryInteraction()
 void ADaCharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth,
 	float Delta)
 {
-	if (NewHealth <= 0.0f && Delta < 0.0f)
-	{
-		// Death
-		APlayerController* PC = Cast<APlayerController>(GetController());
-		DisableInput(PC);
-	}
-	else if (Delta < 0.0f)
+	if (Delta < 0.0f)
 	{
 		// Damage Effects
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
@@ -192,6 +186,15 @@ void ADaCharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponen
 		// Healing Effects
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Green3f()));
+	}
+
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		// Death
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+
+		SetLifeSpan(5.0f);
 	}
 }
 
