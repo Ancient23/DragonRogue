@@ -5,6 +5,7 @@
 
 #include "DaActionComponent.h"
 #include "DragonRogue/DragonRogue.h"
+#include "Net/UnrealNetwork.h"
 
 bool UDaAction::CanStart_Implementation(AActor* Instigator)
 {
@@ -24,7 +25,7 @@ bool UDaAction::CanStart_Implementation(AActor* Instigator)
 
 void UDaAction::StartAction_Implementation(AActor* Instigator)
 {
-	LOG("Running %s", *GetNameSafe(this));
+	LogOnScreen(this, FString::Printf(TEXT("Started %s"), *ActionName.ToString()), FColor::Green);
 
 	UDaActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantTags);
@@ -34,9 +35,7 @@ void UDaAction::StartAction_Implementation(AActor* Instigator)
 
 void UDaAction::StopAction_Implementation(AActor* Instigator)
 {
-	LOG("Stopped %s", *GetNameSafe(this));
-
-	ensureAlways(bIsRunning);
+	LogOnScreen(this, FString::Printf(TEXT("Started %s"), *ActionName.ToString()), FColor::White);
 	
 	UDaActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantTags);
@@ -44,9 +43,15 @@ void UDaAction::StopAction_Implementation(AActor* Instigator)
 	bIsRunning = false;
 }
 
-UDaActionComponent* UDaAction::GetOwningComponent() const
+void UDaAction::OnRep_IsRunning()
 {
-	return Cast<UDaActionComponent>(GetOuter());
+	if (bIsRunning)
+	{
+		StartAction(nullptr);
+	} else
+	{
+		StopAction(nullptr);
+	}
 }
 
 bool UDaAction::IsRunning() const
@@ -64,3 +69,16 @@ UWorld* UDaAction::GetWorld() const
 
 	return nullptr;
 }
+
+UDaActionComponent* UDaAction::GetOwningComponent() const
+{
+	return Cast<UDaActionComponent>(GetOuter());
+}
+
+void UDaAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UDaAction, bIsRunning);
+}
+

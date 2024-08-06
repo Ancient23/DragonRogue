@@ -17,7 +17,7 @@ class DRAGONROGUE_API UDaAction : public UObject
 	GENERATED_BODY()
 
 protected:
-
+	
 	UFUNCTION(BlueprintCallable, Category="Action")
 	UDaActionComponent* GetOwningComponent() const;
 
@@ -26,11 +26,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Tags")
 	FGameplayTagContainer BlockedTags;
-	
+
+	UPROPERTY(ReplicatedUsing="OnRep_IsRunning")
 	bool bIsRunning = false;
+
+	UFUNCTION()
+	void OnRep_IsRunning();
 	
 public:
-
+	
 	UPROPERTY(EditDefaultsOnly, Category="Action")
 	bool bAutoStart;
 	
@@ -54,4 +58,11 @@ public:
 	FName ActionName;
 
 	virtual UWorld* GetWorld() const override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
 };
