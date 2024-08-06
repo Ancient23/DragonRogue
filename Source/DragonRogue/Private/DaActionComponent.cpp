@@ -64,6 +64,12 @@ void UDaActionComponent::AddAction(AActor* Instigator, TSubclassOf<UDaAction> Ac
 		return;
 	}
 
+	if (!GetOwner()->HasAuthority())
+	{
+		LOG_WARNING("Client Attempting to AddAction. [Class: %s]", *GetNameSafe(ActionClass));
+		return;
+	}
+	
 	UDaAction* NewAction = NewObject<UDaAction>(this, ActionClass);
 	if (ensure(NewAction))
 	{
