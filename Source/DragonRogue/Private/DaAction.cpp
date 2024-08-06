@@ -25,8 +25,9 @@ bool UDaAction::CanStart_Implementation(AActor* Instigator)
 
 void UDaAction::StartAction_Implementation(AActor* Instigator)
 {
-	LogOnScreen(this, FString::Printf(TEXT("Started %s"), *ActionName.ToString()), FColor::Green);
-
+	//LogOnScreen(this, FString::Printf(TEXT("Started %s"), *ActionName.ToString()), FColor::Green);
+	LOG("Started %s", *GetNameSafe(this));
+	
 	UDaActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantTags);
 
@@ -36,7 +37,8 @@ void UDaAction::StartAction_Implementation(AActor* Instigator)
 
 void UDaAction::StopAction_Implementation(AActor* Instigator)
 {
-	LogOnScreen(this, FString::Printf(TEXT("Started %s"), *ActionName.ToString()), FColor::White);
+	//LogOnScreen(this, FString::Printf(TEXT("Started %s"), *ActionName.ToString()), FColor::White);
+	LOG("Stopped %s", *GetNameSafe(this));
 	
 	UDaActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantTags);
