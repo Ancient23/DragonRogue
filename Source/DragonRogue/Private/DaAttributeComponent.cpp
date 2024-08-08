@@ -122,58 +122,76 @@ void UDaAttributeComponent::MulticastHealthChanged_Implementation(AActor* Instig
 	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
 }
 
-float UDaAttributeComponent::AddRage(float Amount)
+void UDaAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewRage, float Delta)
 {
-	float ActualDelta = 0.0f;
-	if (ensure(Amount > 0.0f))
-	{
-		float OldRage = Rage;
-		Rage += Amount*RageMultiplier;
-		Rage = FMath::Clamp(Rage, 0, RageMax);
-		ActualDelta = Rage - OldRage;
-
-		if (ActualDelta > 0.0f)
-		{
-			OnRageChanged.Broadcast(GetOwner(), this, Rage, ActualDelta);
-		}
-	}
-	return ActualDelta;
+	OnRageChanged.Broadcast(InstigatorActor, this, NewRage, Delta);
 }
 
-bool UDaAttributeComponent::UseRage(float Amount)
+float UDaAttributeComponent::CalculateRage(float CurrentRage, float Delta) const
+{
+	return FMath::Clamp(CurrentRage + Delta*RageMultiplier, 0, RageMax);
+}
+
+void UDaAttributeComponent::ServerAddRage_Implementation(float Amount)
+{
+	AddRage(Amount);
+}
+
+void UDaAttributeComponent::AddRage(float Amount)
 {
 	if (ensure(Amount > 0.0f))
 	{
-		float OldRage = Rage;
-		Rage -= Amount;
-		Rage = FMath::Clamp(Rage, 0, RageMax);
-		float ActualDelta = OldRage - Rage;
-
+		//client
+		if (!GetOwner()->HasAuthority())
+		{
+			ServerAddRage(Amount);
+			return;
+		}
+		
+		float NewRage = CalculateRage(Rage, Amount);
+		float ActualDelta = NewRage - Rage;
+		
 		if (ActualDelta > 0.0f)
 		{
-			OnRageChanged.Broadcast(GetOwner(),this, Rage, -ActualDelta);
+			Rage = NewRage;
+			MulticastRageChanged(GetOwner(), Rage, ActualDelta);
 		}
-
-		return true;
 	}
-
-	return false;
 }
 
-float UDaAttributeComponent::SetRageToMax()
+void UDaAttributeComponent::ServerUseRage_Implementation(float Amount)
 {
-	float ActualDelta = 0.0f;
+	UseRage(Amount);
+}
+
+
+void UDaAttributeComponent::UseRage(float Amount)
+{
+	if (ensure(Amount > 0.0f))
+	{
+		// client
+		if (!GetOwner()->HasAuthority())
+		{
+			ServerUseRage(Amount);
+			return;
+		}
+		
+		float NewRage = CalculateRage(Rage, -1*Amount);
+		float ActualDelta = Rage - NewRage;
+		if (ActualDelta > 0.0f)
+		{
+			Rage = NewRage;
+			MulticastRageChanged(GetOwner(), Rage, -ActualDelta);
+		}
+	}
+}
+
+void UDaAttributeComponent::SetRageToMax()
+{
 	if (Rage < RageMax)
 	{
-		float OldRage = Rage;
-		Rage = RageMax;
-		ActualDelta = Rage - OldRage;
-		if (ActualDelta > 0.0f)
-		{
-			OnRageChanged.Broadcast(GetOwner(),this, Rage, ActualDelta);
-		}
+		AddRage(RageMax - Rage);
 	}
-	return ActualDelta;
 }
 
 float UDaAttributeComponent::GetRageMax() const

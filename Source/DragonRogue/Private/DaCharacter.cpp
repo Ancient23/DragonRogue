@@ -261,11 +261,7 @@ bool ADaCharacter::IsRageActionAvailable() const
 	}
 	
 	float RageCost = ActionComp->GetActionCostByName("SecondaryAttack");
-	if (RageCost > 0.0f && AttributeComp->GetRage() >= RageCost)
-	{
-		return true;
-	}
-	else if (RageCost == 0.0f)
+	if (AttributeComp->GetRage() >= RageCost)
 	{
 		return true;
 	}

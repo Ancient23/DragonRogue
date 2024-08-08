@@ -49,11 +49,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category="Attributes")
 	float LowHealthThreshold;
 
+	float CalculateRage(float CurrentRage, float Delta) const;
+	
 	// useful for broadcasting but more effects
 	// @FIXME: Mark As Unreliable and use bAsAlive as state
 	// Unreliable also considers relavancy based on distance for example
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRageChanged(AActor* InstigatorActor, float NewRage, float Delta);
+
+	UFUNCTION(Server, Reliable)
+	void ServerAddRage(float Amount);
+
+	UFUNCTION(Server, Reliable)
+	void ServerUseRage(float Amount);
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
@@ -88,13 +99,13 @@ public:
 	float GetRage() const;
 
 	UFUNCTION(BlueprintCallable, Category="Attributes")
-	float AddRage(float Amount);
+	void AddRage(float Amount);
 
 	UFUNCTION(BlueprintCallable, Category="Attributes")
-	bool UseRage(float Amount);
+	void UseRage(float Amount);
 	
 	UFUNCTION(BlueprintCallable, Category="Attributes")
-	float SetRageToMax();
+	void SetRageToMax();
 	
 	UPROPERTY(BlueprintAssignable, Category="Attributes")
 	FOnAttributeChanged OnRageChanged;
