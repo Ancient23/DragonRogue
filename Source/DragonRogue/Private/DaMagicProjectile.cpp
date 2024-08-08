@@ -38,14 +38,15 @@ void ADaMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent
 			SetInstigator(Cast<APawn>(OtherActor));
 			return;
 		}
-		
-		if (UDaGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+
+		AActor* InstigatorActor = GetInstigator();
+		if (UDaGameplayFunctionLibrary::ApplyDirectionalDamage(InstigatorActor, OtherActor, DamageAmount, SweepResult))
 		{
 			Explode();
 
 			if (ActionComp && BurningActionClass && HasAuthority())
 			{
-				ActionComp->AddAction(OtherActor, BurningActionClass);
+				ActionComp->AddAction(InstigatorActor, BurningActionClass);
 			}
 		}
 	}
