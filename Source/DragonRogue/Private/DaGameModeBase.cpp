@@ -22,6 +22,7 @@ ADaGameModeBase::ADaGameModeBase()
 {
 	SpawnTimerInterval=2.0f;
 	CreditsPerKill = 10.0f;
+	MaxBotsOverride = 0;
 }
 
 void ADaGameModeBase::StartPlay()
@@ -115,8 +116,8 @@ void ADaGameModeBase::SpawnBotTimerElapsed()
 
 	LOG("Found %i alive bots", NumberOfAliveBots);
 	
-	float MaxBotCount = 10.f;
-	if (DifficultyCurve)
+	float MaxBotCount = MaxBotsOverride;
+	if (MaxBotsOverride == 0 && DifficultyCurve)
 	{
 		MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
 	}
@@ -182,9 +183,6 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		FTimerDelegate Delegate;
 		Delegate.BindUObject(this, &ThisClass::RespawnPlayerElapsed, Player->GetController());
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespondDelay, false);
-
-		//FString Msg = FString::Printf(TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
-		//LogOnScreen(this, Msg, FColor::Orange);
 	}
 	else if (ADaCharacter* PlayerActor = Cast<ADaCharacter>(KillerActor))
 	{
@@ -192,10 +190,11 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		ADaPlayerState* PlayerState = Cast<ADaPlayerState>(PlayerActor->GetPlayerState());
 		ensureAlways(PlayerState);
 		PlayerState->AdjustCredits(CreditsPerKill);
-		//LOG("OnActorKilled: Killer: %s gets %f credits", *GetNameSafe(KillerActor), CreditsPerKill);
 	}
 
 	LOG("OnActorKilled: Victim: %s, Killer: %s", *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
+	FString Msg = FString::Printf(TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
+	LogOnScreen(this, Msg, FColor::Orange);
 }
 
 void ADaGameModeBase::RespawnPlayerElapsed(AController* Controller)
