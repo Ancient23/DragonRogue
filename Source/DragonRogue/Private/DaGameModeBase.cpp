@@ -173,7 +173,6 @@ void ADaGameModeBase::KillAll()
 void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 {
 	// player dies -> timer elapsed, respawn player
-
 	ADaCharacter* Player = Cast<ADaCharacter>(VictimActor);
 	if (Player)
 	{
@@ -183,13 +182,17 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		FTimerDelegate Delegate;
 		Delegate.BindUObject(this, &ThisClass::RespawnPlayerElapsed, Player->GetController());
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespondDelay, false);
-	} else if (ADaCharacter* PlayerActor = Cast<ADaCharacter>(KillerActor))
+
+		//FString Msg = FString::Printf(TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
+		//LogOnScreen(this, Msg, FColor::Orange);
+	}
+	else if (ADaCharacter* PlayerActor = Cast<ADaCharacter>(KillerActor))
 	{
 		// AI Character was killed. Grant Credits to player
 		ADaPlayerState* PlayerState = Cast<ADaPlayerState>(PlayerActor->GetPlayerState());
 		ensureAlways(PlayerState);
 		PlayerState->AdjustCredits(CreditsPerKill);
-		LOG("OnActorKilled: Killer: %s gets %f credits", *GetNameSafe(KillerActor), CreditsPerKill);
+		//LOG("OnActorKilled: Killer: %s gets %f credits", *GetNameSafe(KillerActor), CreditsPerKill);
 	}
 
 	LOG("OnActorKilled: Victim: %s, Killer: %s", *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
