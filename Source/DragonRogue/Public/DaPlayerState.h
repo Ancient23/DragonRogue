@@ -18,8 +18,11 @@ class DRAGONROGUE_API ADaPlayerState : public APlayerState
 
 protected:
 
-	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category="Credits")
+	UPROPERTY(ReplicatedUsing="OnRep_Credits", EditDefaultsOnly, BlueprintReadOnly, Category="Credits")
 	float Credits;
+
+	UFUNCTION()
+	void OnRep_Credits(float OldCredits);
 	
 public:
 
@@ -31,9 +34,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="Events")
 	FOnCreditsChanged OnCreditsChanged;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastCreditsChanged(AActor* InstigatorActor, float NewCreditAmount, float Delta);
 	
 	ADaPlayerState();
 

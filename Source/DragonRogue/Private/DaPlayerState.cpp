@@ -30,15 +30,20 @@ void ADaPlayerState::AdjustCredits(float Delta)
 	if (HasAuthority())
 	{
 		Credits += Delta;
-		MulticastCreditsChanged(GetInstigator(), Credits, Delta);
+
+		// even though using onRepNotify still have to trigger events on server
+		OnCreditsChanged.Broadcast(GetInstigator(), Credits, Delta);
 	}
 }
 
-void ADaPlayerState::MulticastCreditsChanged_Implementation(AActor* InstigatorActor, float NewCreditAmount, float Delta)
+void ADaPlayerState::OnRep_Credits(float OldCredits)
 {
-	LOG("PlayerState: %s gets %f credits", *GetNameSafe(this), Delta);
-	FString Msg = FString::Printf(TEXT("PlayerState: %s gets %f credits"), *GetNameSafe(this), Delta);
-	LogOnScreen(this, Msg, HasAuthority() ? FColor::Green : FColor::Red);
+	float Delta = Credits-OldCredits;
 	
-	OnCreditsChanged.Broadcast(InstigatorActor, NewCreditAmount, Delta);
+	// LOG("PlayerState: %s gets %f credits", *GetNameSafe(this), Delta);
+	// FString Msg = FString::Printf(TEXT("PlayerState: %s gets %f credits"), *GetNameSafe(this), Delta);
+	// LogOnScreen(this, Msg, HasAuthority() ? FColor::Green : FColor::Red);
+	
+	OnCreditsChanged.Broadcast(GetInstigator(), Credits, Delta);
 }
+
