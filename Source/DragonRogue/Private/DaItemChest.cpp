@@ -16,7 +16,7 @@ ADaItemChest::ADaItemChest()
 
 	TargetPitch = 110;
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ADaItemChest::Interact_Implementation(APawn* InstigatorPawn)

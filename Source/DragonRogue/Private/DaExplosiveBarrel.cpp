@@ -42,7 +42,7 @@ ADaExplosiveBarrel::ADaExplosiveBarrel()
 
 	DamageAmount = 50.0f;
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

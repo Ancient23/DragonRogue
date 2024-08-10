@@ -10,7 +10,7 @@ ADaPlayerState::ADaPlayerState()
 {
 	Credits = 0.f;
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ADaPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
