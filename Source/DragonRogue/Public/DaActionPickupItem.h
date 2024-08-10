@@ -23,5 +23,5 @@ public:
 	UPROPERTY(EditAnywhere, Category="Actions")
 	TSubclassOf<UDaAction> ActionClass;
 
-	virtual void ActOnInteraction(AActor* InstigatorActor) override;
+	void Interact_Implementation(APawn* InstigatorPawn) override;
 };

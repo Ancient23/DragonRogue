@@ -18,7 +18,7 @@ public:
 	UPROPERTY(EditAnywhere, Category="Credits")
 	float CreditsAmount;
 	
-	virtual void ActOnInteraction(AActor* InstigatorActor) override;
+	void Interact_Implementation(APawn* InstigatorPawn) override;
 
 	ADaCreditsPickupItem();
 };

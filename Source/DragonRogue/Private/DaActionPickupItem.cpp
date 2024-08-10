@@ -2,19 +2,18 @@
 
 
 #include "DaActionPickupItem.h"
-
 #include "DaActionComponent.h"
 
-void ADaActionPickupItem::ActOnInteraction(AActor* InstigatorActor)
+void ADaActionPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if (InstigatorActor)
+	if (InstigatorPawn)
 	{
-		UDaActionComponent* ActionComp = UDaActionComponent::GetActions(InstigatorActor);
+		UDaActionComponent* ActionComp = UDaActionComponent::GetActions(InstigatorPawn);
 		if (ActionComp && !ActionComp->ContainsActionWithName(ActionName))
 		{
-			ActionComp->AddAction(InstigatorActor, ActionClass);
+			ActionComp->AddAction(InstigatorPawn, ActionClass);
 
-			Super::ActOnInteraction(InstigatorActor);
+			HideAndCooldownItem(InstigatorPawn);
 		}
 	}
 }

@@ -5,22 +5,20 @@
 
 #include "DaPlayerState.h"
 
-
 ADaCreditsPickupItem::ADaCreditsPickupItem()
 {
 	CreditsAmount = 10.0f;
 }
 
-void ADaCreditsPickupItem::ActOnInteraction(AActor* InstigatorActor)
+void ADaCreditsPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if (InstigatorActor)
+	if (InstigatorPawn)
 	{
-		if (ADaPlayerState* PlayerState = InstigatorActor->GetInstigatorController()->GetPlayerState<ADaPlayerState>())
+		if (ADaPlayerState* PlayerState = InstigatorPawn->GetInstigatorController()->GetPlayerState<ADaPlayerState>())
 		{
 			PlayerState->AdjustCredits(CreditsAmount);
 					
-			// super class handles effects if this was used so if no health change was made dont call super
-			Super::ActOnInteraction(InstigatorActor);
+			HideAndCooldownItem(InstigatorPawn);
 		}
 	}
 }

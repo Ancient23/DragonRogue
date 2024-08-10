@@ -12,20 +12,19 @@ ADaHealthPickupItem::ADaHealthPickupItem()
 	Cost = 5.0f;
 }
 
-void ADaHealthPickupItem::ActOnInteraction(AActor* InstigatorActor)
+void ADaHealthPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if (InstigatorActor)
+	if (InstigatorPawn)
 	{
-		if (ADaPlayerState* PlayerState = InstigatorActor->GetInstigatorController()->GetPlayerState<ADaPlayerState>())
+		if (ADaPlayerState* PlayerState = InstigatorPawn->GetInstigatorController()->GetPlayerState<ADaPlayerState>())
 		{
 			if (PlayerState->GetCredits() >= Cost)
 			{
-				if (UDaGameplayFunctionLibrary::ApplyHealing(this, InstigatorActor, HealthAmount))
+				if (UDaGameplayFunctionLibrary::ApplyHealing(this, InstigatorPawn, HealthAmount))
 				{
 					PlayerState->AdjustCredits(-Cost);
 					
-					// super class handles effects if this was used so if no health change was made dont call super
-					Super::ActOnInteraction(InstigatorActor);
+					HideAndCooldownItem(InstigatorPawn);
 				}
 			}
 		}

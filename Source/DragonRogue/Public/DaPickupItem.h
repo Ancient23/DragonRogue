@@ -9,6 +9,9 @@
 
 class USphereComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActiveStateChanged, AActor*, InstigatorActor, bool, IsActive);
+
+
 UCLASS()
 class DRAGONROGUE_API ADaPickupItem : public AActor, public IDaGameplayInterface
 {
@@ -18,8 +21,10 @@ public:
 	
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 	
-	// Sets default values for this actor's properties
 	ADaPickupItem();
+	
+	UPROPERTY(BlueprintAssignable, Category="Pickups")
+	FOnActiveStateChanged OnActiveStateChanged;
 
 protected:
 
@@ -41,18 +46,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
 	UStaticMeshComponent* BaseMeshComp;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
-	UParticleSystemComponent* EffectComp;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
-	UAudioComponent* IdleSoundComp;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	UParticleSystem* PickupVFX;
-
-	UPROPERTY(EditDefaultsOnly, Category= "Sound FX")
-	USoundBase* PickupSound;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Respawn Settings")
 	bool bShouldRespawn;
 
@@ -67,16 +60,19 @@ protected:
 
 	UPROPERTY(Replicated)
 	bool bIsActive;
-	
-	virtual void ActOnInteraction(AActor* InstigatorActor);
-	
-	virtual void BeginPlay() override;
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastActiveStateChanged(AActor* InstigatorActor, bool NewState);
+	
 	UFUNCTION()
 	void FadeMesh(AActor* InstigatorActor);
 
-	void RespawnItem();
+	UFUNCTION()
+	void ShowItem(APawn* InstigatorPawn);
 
+	void HideAndCooldownItem(APawn* InstigatorPawn);
+
+	void SetItemState(APawn* InstigatorPawn, bool bNewIsActive);
 	
 };
 

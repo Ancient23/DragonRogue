@@ -24,5 +24,5 @@ public:
 	UPROPERTY(EditAnywhere, Category="Credits")
 	float Cost;
 	
-	virtual void ActOnInteraction(AActor* InstigatorActor) override;
+	void Interact_Implementation(APawn* InstigatorPawn) override;
 };

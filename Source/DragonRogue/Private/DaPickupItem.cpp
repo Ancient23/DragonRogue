@@ -3,12 +3,9 @@
 
 #include "DaPickupItem.h"
 
-#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
-#include "Particles/ParticleSystemComponent.h"
 #include "Util/ColorConstants.h"
 
 // Sets default values
@@ -22,12 +19,6 @@ ADaPickupItem::ADaPickupItem()
 	BaseMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	BaseMeshComp->SetupAttachment(RootComponent);
 
-	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EffectComp"));
-	EffectComp->SetupAttachment(RootComponent);
-
-	IdleSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("IdleSoundComp"));
-	IdleSoundComp->SetupAttachment(RootComponent);
-
 	bShouldRespawn = true;
 	bShouldRespawnOnDeath = false;
 	RespawnDelay = 10.0f;
@@ -39,34 +30,21 @@ ADaPickupItem::ADaPickupItem()
 
 	FlashColor = FVector(UE::Geometry::LinearColors::Green3f());
 
-	SetReplicates(true);
-}
-
-void ADaPickupItem::BeginPlay()
-{
-	Super::BeginPlay();
-
-	IdleSoundComp->Play();
+	bReplicates = true;
 }
 
 void ADaPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if (bIsActive)
-		ActOnInteraction(InstigatorPawn);
+	// Derived Classes to override
 }
 
-void ADaPickupItem::ActOnInteraction(AActor* InstigatorActor)
+void ADaPickupItem::MulticastActiveStateChanged_Implementation(AActor* InstigatorActor, bool NewState)
 {
-	if (IsValid(this))
+	if (!NewState)
 	{
-		bIsActive = false;
-
-		UGameplayStatics::PlaySoundAtLocation(this, PickupSound, GetActorLocation(), GetActorRotation());
-		UGameplayStatics::SpawnEmitterAtLocation(this, PickupVFX, GetActorLocation(), GetActorRotation());
-		
 		BaseMeshComp->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		BaseMeshComp->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FlashColor);
-
+	
 		// disable for a time, then re-enable if requested
 		FTimerHandle TimerHandle_DelayedHide;
 		FTimerDelegate Delegate;
@@ -74,32 +52,57 @@ void ADaPickupItem::ActOnInteraction(AActor* InstigatorActor)
 
 		GetWorldTimerManager().SetTimer(TimerHandle_DelayedHide, Delegate, 0.25f, false );
 	}
+	else
+	{
+		SetActorEnableCollision(true);
+		// Set visibility on root and all children
+		RootComponent->SetVisibility(true, true);
+		
+		// broadcast to listeners
+		OnActiveStateChanged.Broadcast(InstigatorActor, true);
+	}
+}
+
+void ADaPickupItem::FadeMesh(AActor* InstigatorActor)
+{
+	SetActorEnableCollision(false);
+	// Set visibility on root and all children
+	RootComponent->SetVisibility(false, true);
+
+	// broadcast to listeners
+	OnActiveStateChanged.Broadcast(InstigatorActor, false);
+}
+
+void ADaPickupItem::ShowItem(APawn* InstigatorPawn)
+{
+	SetItemState(InstigatorPawn, true);
 }
 
 void ADaPickupItem::OnPlayerRespawn(APawn* OldPawn, APawn* NewPawn)
 {
 	// start a 10 second timer to re-enable item if its still available to be picked up
 	FTimerHandle TimerHandle_DelayedActivate;
-	GetWorldTimerManager().SetTimer(TimerHandle_DelayedActivate, this, &ADaPickupItem::RespawnItem, RespawnDelay );
+	FTimerDelegate Delegate;
+	Delegate.BindUFunction(this, "ShowItem", NewPawn);
+	GetWorldTimerManager().SetTimer(TimerHandle_DelayedActivate, Delegate, RespawnDelay, false );
 }
 
-void ADaPickupItem::FadeMesh(AActor* InstigatorActor)
+void ADaPickupItem::HideAndCooldownItem(APawn* InstigatorPawn)
 {
-	BaseMeshComp->SetVisibility(false);
-	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 0.2f);
-	EffectComp->Deactivate();
-	IdleSoundComp->Stop();
-	
+	SetItemState(InstigatorPawn, false);
+
 	if (bShouldRespawnOnDeath)
 	{
-		Cast<ACharacter>(InstigatorActor)->GetController()->OnPossessedPawnChanged.AddDynamic(this, &ADaPickupItem::OnPlayerRespawn);
+		Cast<ACharacter>(InstigatorPawn)->GetController()->OnPossessedPawnChanged.AddDynamic(this, &ADaPickupItem::OnPlayerRespawn);
 	}
 	// destroy if this wont respawn
 	else if (bShouldRespawn)
 	{
 		// start a 10 second timer to re-enable item if its still available to be picked up
 		FTimerHandle TimerHandle_DelayedActivate;
-		GetWorldTimerManager().SetTimer(TimerHandle_DelayedActivate, this, &ADaPickupItem::RespawnItem, RespawnDelay );
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, "ShowItem", InstigatorPawn);
+		GetWorldTimerManager().SetTimer(TimerHandle_DelayedActivate, Delegate, RespawnDelay, false );
 	}
 	else
 	{
@@ -107,14 +110,10 @@ void ADaPickupItem::FadeMesh(AActor* InstigatorActor)
 	}
 }
 
-void ADaPickupItem::RespawnItem()
+void ADaPickupItem::SetItemState(APawn* InstigatorPawn, bool bNewIsActive)
 {
-	BaseMeshComp->SetVisibility(true);
-	BaseMeshComp->SetScalarParameterValueOnMaterials(AlphaVisibilityParamName, 1.f);
-	bIsActive = true;
-	EffectComp->Activate();
-	IdleSoundComp->Play();
-
+	bIsActive = bNewIsActive;
+	MulticastActiveStateChanged(InstigatorPawn, bNewIsActive);
 }
 
 void ADaPickupItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
