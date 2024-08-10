@@ -132,56 +132,30 @@ float UDaAttributeComponent::CalculateRage(float CurrentRage, float Delta) const
 	return FMath::Clamp(CurrentRage + Delta*RageMultiplier, 0, RageMax);
 }
 
-void UDaAttributeComponent::ServerAddRage_Implementation(float Amount)
-{
-	AddRage(Amount);
-}
-
 void UDaAttributeComponent::AddRage(float Amount)
 {
 	if (ensure(Amount > 0.0f))
 	{
-		//client
-		if (!GetOwner()->HasAuthority())
-		{
-			ServerAddRage(Amount);
-			return;
-		}
-		
 		float NewRage = CalculateRage(Rage, Amount);
 		float ActualDelta = NewRage - Rage;
-		
 		if (ActualDelta > 0.0f)
 		{
 			Rage = NewRage;
-			MulticastRageChanged(GetOwner(), Rage, ActualDelta);
+			OnRageChanged.Broadcast(GetOwner(), this, NewRage, ActualDelta);
 		}
 	}
 }
-
-void UDaAttributeComponent::ServerUseRage_Implementation(float Amount)
-{
-	UseRage(Amount);
-}
-
 
 void UDaAttributeComponent::UseRage(float Amount)
 {
 	if (ensure(Amount > 0.0f))
 	{
-		// client
-		if (!GetOwner()->HasAuthority())
-		{
-			ServerUseRage(Amount);
-			return;
-		}
-		
 		float NewRage = CalculateRage(Rage, -1*Amount);
 		float ActualDelta = Rage - NewRage;
 		if (ActualDelta > 0.0f)
 		{
 			Rage = NewRage;
-			MulticastRageChanged(GetOwner(), Rage, -ActualDelta);
+			OnRageChanged.Broadcast(GetOwner(), this, NewRage, -ActualDelta);
 		}
 	}
 }

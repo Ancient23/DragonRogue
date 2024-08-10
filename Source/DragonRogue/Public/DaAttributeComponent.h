@@ -7,8 +7,6 @@
 #include "DaAttributeComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAttributeChanged, AActor*, InstigatorActor, UDaAttributeComponent*, OwningComp, float, NewAttribValue, float, Delta);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRageChanged, UDaAttributeComponent*, OwningComp, float, NewRage, float, Delta);
-
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DRAGONROGUE_API UDaAttributeComponent : public UActorComponent
@@ -26,7 +24,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Attributes", meta = (DisplayName = "HasLowHealth"))
 	static bool HasLowHealth(AActor* Actor);
 	
-	// Sets default values for this actor's properties
 	UDaAttributeComponent();
 
 protected:
@@ -57,14 +54,8 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastRageChanged(AActor* InstigatorActor, float NewRage, float Delta);
-
-	UFUNCTION(Server, Reliable)
-	void ServerAddRage(float Amount);
-
-	UFUNCTION(Server, Reliable)
-	void ServerUseRage(float Amount);
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	

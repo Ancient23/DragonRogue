@@ -179,7 +179,7 @@ void ADaCharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponen
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorParamName, FVector(UE::Geometry::LinearColors::Red3f()));
 		
-		OwningComp->AddRage(FMath::Abs(Delta));
+		AttributeComp->AddRage(FMath::Abs(Delta));
 	}
 	else if (Delta > 0.0f)
 	{
