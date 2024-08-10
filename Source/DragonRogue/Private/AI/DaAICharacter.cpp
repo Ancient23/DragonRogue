@@ -54,8 +54,11 @@ void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 	
 	SetTargetActor(Pawn); //@TODO: Toggle mode to set player only vs all characters so game designers can choose
 
-	//DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 2.0f, true);
+	MulticastOnPawnSeen(Pawn);
+}
 
+void ADaAICharacter::MulticastOnPawnSeen_Implementation(APawn* Pawn)
+{
 	// Add some cool Widget or emote to NPC to signify when they've spotted the player
 	if (PlayerSeenWidget == nullptr)
 	{
@@ -68,6 +71,9 @@ void ADaAICharacter::OnPawnSeen(APawn* Pawn)
 			FTimerHandle TimerHandle_PlayerSeenElapsed;
 			GetWorldTimerManager().SetTimer(TimerHandle_PlayerSeenElapsed, this, &ADaAICharacter::PlayerSeenWidgetTimeExpired, PlayerSeenEmoteTime );
 		}
+
+		FString Msg = FString::Printf(TEXT("%s SPOTTED"), *GetNameSafe(Pawn));
+		DrawDebugString(GetWorld(), GetActorLocation(), Msg, nullptr, FColor::White, PlayerSeenEmoteTime, true);
 	}
 }
 
