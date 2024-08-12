@@ -18,11 +18,13 @@ public:
 	float TargetPitch;
 	
 	void Interact_Implementation(APawn* InstigatorPawn) override;
+
+	virtual void OnActorLoaded_Implementation() override;
 	
 protected:
 
 	// ReplicatedUsing is RepNotify in BP
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly)
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly, SaveGame)
 	bool bLidOpened;
 
 	UFUNCTION()

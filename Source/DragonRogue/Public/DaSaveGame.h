@@ -20,6 +20,9 @@ public:
 	// For Movable Actors
 	UPROPERTY()
 	FTransform Transform;
+
+	UPROPERTY()
+	TArray<uint8> ByteData;
 };
 
 /**

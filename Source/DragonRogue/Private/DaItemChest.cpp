@@ -25,6 +25,11 @@ void ADaItemChest::Interact_Implementation(APawn* InstigatorPawn)
 	OnRep_LidOpened();
 }
 
+void ADaItemChest::OnActorLoaded_Implementation()
+{
+	OnRep_LidOpened();
+}
+
 void ADaItemChest::OnRep_LidOpened()
 {
 	float CurrentPitch = bLidOpened ? TargetPitch : 0.0f;

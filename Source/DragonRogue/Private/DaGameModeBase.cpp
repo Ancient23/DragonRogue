@@ -16,6 +16,7 @@
 #include "DragonRogue/DaConstants.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("da.SpawnBots"), true, TEXT("Enable Spawning of Bots with Timer"), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarDebugSpawnBots(TEXT("da.DrawDebugSpawnBots"), false, TEXT("Draw Debug Spheres showing location where Bots spawned"), ECVF_Cheat);
@@ -250,6 +251,13 @@ void ADaGameModeBase::WriteSaveGame()
 		ActorData.ActorName = Actor->GetName();
 		ActorData.Transform = Actor->GetActorTransform();
 
+		FMemoryWriter MemoryWriter(ActorData.ByteData);
+		FObjectAndNameAsStringProxyArchive Ar(MemoryWriter, true);
+		// Finds only variables marked with SaveGame in UPROPERTY
+		Ar.ArIsSaveGame = true;
+		// Converts actor's SaveGame UPROPERTIES into Binary array
+		Actor->Serialize(Ar);
+		
 		CurrentSaveGame->SavedActors.Add(ActorData);
 	}
 	
@@ -263,7 +271,7 @@ void ADaGameModeBase::LoadSaveGame()
 		CurrentSaveGame = Cast<UDaSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
 		if (CurrentSaveGame == nullptr)
 		{
-			LOG_WARNING("Failed to loadd save game data.")
+			LOG_WARNING("Failed to load save game data.")
 			return;
 		}
 
@@ -284,6 +292,17 @@ void ADaGameModeBase::LoadSaveGame()
 				if (ActorData.ActorName == Actor->GetName())
 				{
 					Actor->SetActorTransform(ActorData.Transform);
+
+					FMemoryReader MemoryReader(ActorData.ByteData);
+
+					FObjectAndNameAsStringProxyArchive Ar(MemoryReader, true);
+					// Finds only variables marked with SaveGame in UPROPERTY
+					Ar.ArIsSaveGame = true;
+					// Convert binary array back to actors variables
+					Actor->Serialize(Ar);
+
+					IDaGameplayInterface::Execute_OnActorLoaded(Actor);
+					
 					break;
 				}
 			}
