@@ -232,6 +232,26 @@ void ADaGameModeBase::WriteSaveGame()
 			break; // simple player only, for multiplayer would need to store a map of ID->PlayerState
 		}
 	}
+
+	// clear list before we add to it
+	CurrentSaveGame->SavedActors.Empty();
+	
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+
+		// Only our gameplay actors
+		if (!Actor->Implements<UDaGameplayInterface>())
+		{
+			continue;
+		}
+
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.Transform = Actor->GetActorTransform();
+
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
 	
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
 }
@@ -248,6 +268,26 @@ void ADaGameModeBase::LoadSaveGame()
 		}
 
 		LOG("Loaded Save Game data.")
+
+		for (FActorIterator It(GetWorld()); It; ++It)
+		{
+			AActor* Actor = *It;
+
+			// Only our gameplay actors
+			if (!Actor->Implements<UDaGameplayInterface>())
+			{
+				continue;
+			}
+
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+			{
+				if (ActorData.ActorName == Actor->GetName())
+				{
+					Actor->SetActorTransform(ActorData.Transform);
+					break;
+				}
+			}
+		}
 	}
 	else
 	{
