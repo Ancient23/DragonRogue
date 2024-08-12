@@ -7,6 +7,7 @@
 #include "DaAttributeComponent.h"
 #include "DaGameplayFunctionLibrary.h"
 #include "DaInteractionComponent.h"
+#include "DaPlayerController.h"
 #include "DaPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -250,6 +251,8 @@ void ADaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ADaCharacter::SprintStart);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ADaCharacter::SprintStop);
 
+		// Toggle Pause Menu
+		EnhancedInputComponent->BindAction(PausseMenuAction, ETriggerEvent::Started, Cast<ADaPlayerController>(this->Controller.Get()), &ADaPlayerController::TogglePauseMenu);
 	}
 }
 

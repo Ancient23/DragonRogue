@@ -76,6 +76,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
 	UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
+	UInputAction* PausseMenuAction;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

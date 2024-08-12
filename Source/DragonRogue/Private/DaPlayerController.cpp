@@ -3,6 +3,8 @@
 
 #include "DaPlayerController.h"
 
+#include "Blueprint/UserWidget.h"
+
 void ADaPlayerController::BeginPlayingState()
 {
 	Super::BeginPlayingState();
@@ -17,3 +19,25 @@ void ADaPlayerController::OnRep_PlayerState()
 	OnPlayerStateReceived.Broadcast(PlayerState);
 }
 
+void ADaPlayerController::TogglePauseMenu()
+{
+	if (PauseMenuInstance && PauseMenuInstance->IsInViewport())
+	{
+		PauseMenuInstance->RemoveFromParent();
+		PauseMenuInstance = nullptr;
+
+		bShowMouseCursor = false;
+		SetInputMode(FInputModeGameOnly());
+
+		return;
+	}
+	
+	PauseMenuInstance = CreateWidget<UUserWidget>(this, PauseMenuClass);
+	if (PauseMenuInstance)
+	{
+		PauseMenuInstance->AddToViewport(100);
+
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
+	}
+}
