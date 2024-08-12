@@ -22,7 +22,7 @@ public:
 	float HealthAmount;
 
 	UPROPERTY(EditAnywhere, Category="Credits")
-	float Cost;
+	int32 Cost;
 	
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 };

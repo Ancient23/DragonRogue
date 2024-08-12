@@ -16,7 +16,7 @@ class DRAGONROGUE_API ADaCreditsPickupItem : public ADaPickupItem
 
 public:
 	UPROPERTY(EditAnywhere, Category="Credits")
-	float CreditsAmount;
+	int32 CreditsAmount;
 	
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 

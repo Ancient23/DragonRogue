@@ -7,7 +7,7 @@
 
 ADaCreditsPickupItem::ADaCreditsPickupItem()
 {
-	CreditsAmount = 10.0f;
+	CreditsAmount = 10;
 }
 
 void ADaCreditsPickupItem::Interact_Implementation(APawn* InstigatorPawn)

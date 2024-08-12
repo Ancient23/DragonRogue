@@ -7,12 +7,15 @@
 #include "DaCharacter.h"
 #include "DaPickupItem.h"
 #include "DaPlayerState.h"
+#include "DaSaveGame.h"
 #include "AI/DaAICharacter.h"
 #include "DragonRogue/DragonRogue.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "EngineUtils.h"
 #include "DragonRogue/DaConstants.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("da.SpawnBots"), true, TEXT("Enable Spawning of Bots with Timer"), ECVF_Cheat);
 static TAutoConsoleVariable<bool> CVarDebugSpawnBots(TEXT("da.DrawDebugSpawnBots"), false, TEXT("Draw Debug Spheres showing location where Bots spawned"), ECVF_Cheat);
@@ -21,8 +24,17 @@ static TAutoConsoleVariable<bool> CVarDebugSpawnItems(TEXT("da.DrawDebugSpawnIte
 ADaGameModeBase::ADaGameModeBase()
 {
 	SpawnTimerInterval=2.0f;
-	CreditsPerKill = 10.0f;
+	CreditsPerKill = 10;
 	MaxBotsOverride = 0;
+
+	SlotName = "Savegame01";
+}
+
+void ADaGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	LoadSaveGame();
 }
 
 void ADaGameModeBase::StartPlay()
@@ -205,5 +217,55 @@ void ADaGameModeBase::RespawnPlayerElapsed(AController* Controller)
 		Controller->UnPossess();
 		
 		RestartPlayer(Controller);
+	}
+}
+
+void ADaGameModeBase::WriteSaveGame()
+{
+	// Iterate all player states, need proper ID to match (Steam or EOS)
+	for (int32 i = 0; GameState->PlayerArray.Num(); i++)
+	{
+		ADaPlayerState* PS = Cast<ADaPlayerState>(GameState->PlayerArray[i]);
+		if (PS)
+		{
+			PS->SavePlayerState(CurrentSaveGame);
+			break; // simple player only, for multiplayer would need to store a map of ID->PlayerState
+		}
+	}
+	
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
+}
+
+void ADaGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		CurrentSaveGame = Cast<UDaSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+		if (CurrentSaveGame == nullptr)
+		{
+			LOG_WARNING("Failed to loadd save game data.")
+			return;
+		}
+
+		LOG("Loaded Save Game data.")
+	}
+	else
+	{
+		CurrentSaveGame = Cast<UDaSaveGame>(UGameplayStatics::CreateSaveGameObject(UDaSaveGame::StaticClass()));
+
+		LOG("Created new Save Game data.")
+	}
+}
+
+void ADaGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	ADaPlayerState* PS = NewPlayer->GetPlayerState<ADaPlayerState>();
+	if (PS)
+	{
+		PS->LoadPlayerState(CurrentSaveGame);
+
+		LOG("Loaded Player State.")
 	}
 }

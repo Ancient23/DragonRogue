@@ -18,6 +18,7 @@ class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
 class AController;
+class UDaSaveGame;
 
 /**
  * 
@@ -29,8 +30,13 @@ class DRAGONROGUE_API ADaGameModeBase : public AGameModeBase
 
 protected:
 
+	FString SlotName;
+	
+	UPROPERTY()
+	UDaSaveGame* CurrentSaveGame;
+	
 	UPROPERTY(EditAnywhere, Category="Credits")
-	float CreditsPerKill;
+	int32 CreditsPerKill;
 
 	UPROPERTY(EditDefaultsOnly, Category="Pickups")
 	UEnvQuery* SpawnItemQuery;
@@ -70,6 +76,8 @@ protected:
 	
 public:
 
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	
 	virtual void OnActorKilled(AActor* VictimActor, AActor* KillerActor);
 	
 	ADaGameModeBase();
@@ -78,4 +86,11 @@ public:
 
 	UFUNCTION(Exec)
 	void KillAll();
+
+	UFUNCTION(BlueprintCallable, Category="SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

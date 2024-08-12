@@ -3,12 +3,13 @@
 
 #include "DaPlayerState.h"
 
+#include "DaSaveGame.h"
 #include "DragonRogue/DragonRogue.h"
 #include "Net/UnrealNetwork.h"
 
 ADaPlayerState::ADaPlayerState()
 {
-	Credits = 0.f;
+	Credits = 0;
 
 	bReplicates = true;
 }
@@ -20,12 +21,12 @@ void ADaPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ADaPlayerState, Credits);
 }
 
-float ADaPlayerState::GetCredits() const
+int32 ADaPlayerState::GetCredits() const
 {
 	return Credits;
 }
 
-void ADaPlayerState::AdjustCredits(float Delta)
+void ADaPlayerState::AdjustCredits(int32 Delta)
 {
 	if (HasAuthority())
 	{
@@ -36,7 +37,7 @@ void ADaPlayerState::AdjustCredits(float Delta)
 	}
 }
 
-void ADaPlayerState::OnRep_Credits(float OldCredits)
+void ADaPlayerState::OnRep_Credits(int32 OldCredits)
 {
 	float Delta = Credits-OldCredits;
 	
@@ -47,3 +48,19 @@ void ADaPlayerState::OnRep_Credits(float OldCredits)
 	OnCreditsChanged.Broadcast(GetInstigator(), Credits, Delta);
 }
 
+
+void ADaPlayerState::LoadPlayerState_Implementation(UDaSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		Credits = SaveObject->Credits;
+	}
+}
+
+void ADaPlayerState::SavePlayerState_Implementation(UDaSaveGame* SaveObject)
+{
+	if (SaveObject)
+	{
+		 SaveObject->Credits = Credits;
+	}
+}
