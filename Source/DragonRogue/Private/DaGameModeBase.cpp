@@ -318,13 +318,13 @@ void ADaGameModeBase::LoadSaveGame()
 
 void ADaGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 
 	ADaPlayerState* PS = NewPlayer->GetPlayerState<ADaPlayerState>();
 	if (PS)
 	{
 		PS->LoadPlayerState(CurrentSaveGame);
-
-		LOG("Loaded Player State.")
 	}
+
+	// Will call BeginPlaying State in Player Controller so make sure our data is setup before this calls super
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }

@@ -53,7 +53,8 @@ void ADaPlayerState::LoadPlayerState_Implementation(UDaSaveGame* SaveObject)
 {
 	if (SaveObject)
 	{
-		Credits = SaveObject->Credits;
+		//Credits = SaveObject->Credits;
+		AdjustCredits(SaveObject->Credits);
 	}
 }
 
