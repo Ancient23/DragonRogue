@@ -34,7 +34,10 @@ void UDaAction::StartAction_Implementation(AActor* Instigator)
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
 
-	TimeStarted = GetWorld()->TimeSeconds;
+	if (GetOwningComponent()->GetOwnerRole() == ROLE_Authority)
+	{
+		TimeStarted = GetWorld()->TimeSeconds;
+	}
 	
 	Comp->OnActionStarted.Broadcast(Comp, this);
 }
@@ -89,5 +92,7 @@ void UDaAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UDaAction, RepData);
+	DOREPLIFETIME(UDaAction, TimeStarted);
+
 }
 

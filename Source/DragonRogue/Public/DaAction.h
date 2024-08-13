@@ -52,6 +52,7 @@ protected:
 	UFUNCTION()
 	void OnRep_IsRunning();
 
+	UPROPERTY(Replicated)
 	float TimeStarted;
 	
 public:

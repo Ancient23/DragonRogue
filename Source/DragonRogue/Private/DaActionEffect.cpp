@@ -3,6 +3,7 @@
 
 #include "DaActionEffect.h"
 #include "DaActionComponent.h"
+#include "GameFramework/GameStateBase.h"
 
 UDaActionEffect::UDaActionEffect()
 {
@@ -52,8 +53,15 @@ void UDaActionEffect::StopAction_Implementation(AActor* Instigator)
 
 float UDaActionEffect::GetTimeRemaining() const
 {
-	float EndTime = TimeStarted + Duration;
-	return EndTime - GetWorld()->TimeSeconds;
+	AGameStateBase* GS = GetWorld()->GetGameState<AGameStateBase>();
+	if (GS)
+	{
+		float EndTime = TimeStarted + Duration;
+		return EndTime - GS->GetServerWorldTimeSeconds();
+	}
+
+	// if there is no game state just assume this has all of its time remaining
+	return Duration;
 }
 
 void UDaActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)
