@@ -33,6 +33,8 @@ void UDaAction::StartAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
+
+	Comp->OnActionStarted.Broadcast(Comp, this);
 }
 
 void UDaAction::StopAction_Implementation(AActor* Instigator)
@@ -44,6 +46,8 @@ void UDaAction::StopAction_Implementation(AActor* Instigator)
 	Comp->ActiveGameplayTags.RemoveTags(GrantTags);
 
 	RepData.bIsRunning = false;
+
+	Comp->OnActionStopped.Broadcast(Comp, this);
 }
 
 void UDaAction::OnRep_IsRunning()

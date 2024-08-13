@@ -7,8 +7,9 @@
 #include "Components/ActorComponent.h"
 #include "DaActionComponent.generated.h"
 
-
 class UDaAction;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, UDaActionComponent*, OwningComp, UDaAction*, Action);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DRAGONROGUE_API UDaActionComponent : public UActorComponent
@@ -17,6 +18,8 @@ class DRAGONROGUE_API UDaActionComponent : public UActorComponent
 
 public:
 
+	UDaActionComponent();
+	
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	static UDaActionComponent* GetActions(AActor* FromActor);
 	
@@ -40,8 +43,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Actions")
 	float GetActionCostByName(FName ActionName);
-	
-	UDaActionComponent();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionStateChanged OnActionStarted;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionStateChanged OnActionStopped;
 
 protected:
 
@@ -54,7 +61,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Actions")
 	TArray<TSubclassOf<UDaAction>> DefaultActions;
 	
-	UPROPERTY(Replicated)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<TObjectPtr<UDaAction>> Actions;
 	
 	virtual void BeginPlay() override;
