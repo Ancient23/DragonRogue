@@ -4,6 +4,7 @@
 #include "DaPlayerController.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 void ADaPlayerController::BeginPlayingState()
 {
@@ -29,6 +30,13 @@ void ADaPlayerController::TogglePauseMenu()
 		bShowMouseCursor = false;
 		SetInputMode(FInputModeGameOnly());
 
+		//@TODO: Single-player only. Make work for multiplayer.
+		// Exapple issues to resolve: triggering abilities while the game is paused, or releasing your sprint button after pausing the game 
+		if (GetWorld()->IsNetMode(NM_Standalone))
+		{
+			UGameplayStatics::SetGamePaused(this, false);
+		}
+		
 		return;
 	}
 	
@@ -39,5 +47,11 @@ void ADaPlayerController::TogglePauseMenu()
 
 		bShowMouseCursor = true;
 		SetInputMode(FInputModeUIOnly());
+
+		//@TODO: Single-player only. Make work for multiplayer
+		if (GetWorld()->IsNetMode(NM_Standalone))
+		{
+			UGameplayStatics::SetGamePaused(this, true);
+		}
 	}
 }
