@@ -51,6 +51,8 @@ protected:
 
 	UFUNCTION()
 	void OnRep_IsRunning();
+
+	float TimeStarted;
 	
 public:
 	
@@ -59,7 +61,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Action")
 	bool IsRunning() const;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Action")
 	float CostToActivate = 0.0f;
 	

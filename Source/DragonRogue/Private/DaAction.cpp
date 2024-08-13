@@ -34,6 +34,8 @@ void UDaAction::StartAction_Implementation(AActor* Instigator)
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
 
+	TimeStarted = GetWorld()->TimeSeconds;
+	
 	Comp->OnActionStarted.Broadcast(Comp, this);
 }
 
