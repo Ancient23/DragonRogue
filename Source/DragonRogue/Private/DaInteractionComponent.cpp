@@ -22,6 +22,27 @@ void UDaInteractionComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
+void UDaInteractionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	RemoveWidget();
+	
+	Super::EndPlay(EndPlayReason);
+}
+
+void UDaInteractionComponent::RemoveWidget()
+{
+	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
+
+	if (DefaultWidgetInstance && DefaultWidgetInstance->IsInViewport())
+	{
+		DefaultWidgetInstance->RemoveFromParent();
+		if (bDebugDraw)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, "Removed Widget to Viewport.");
+		}
+	}
+}
+
 void UDaInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -102,14 +123,7 @@ void UDaInteractionComponent::FindBestInteractable()
 	}
 	else
 	{
-		if (DefaultWidgetInstance && DefaultWidgetInstance->IsInViewport())
-		{
-			DefaultWidgetInstance->RemoveFromParent();
-			if (bDebugDraw)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, "Removed Widget to Viewport.");
-			}
-		}
+		RemoveWidget();
 	}
 	
 	if (bDebugDraw)
