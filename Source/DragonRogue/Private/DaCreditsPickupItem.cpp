@@ -5,6 +5,8 @@
 
 #include "DaPlayerState.h"
 
+#define LOCTEXT_NAMESPACE "InteractableActors"
+
 ADaCreditsPickupItem::ADaCreditsPickupItem()
 {
 	CreditsAmount = 10;
@@ -22,3 +24,10 @@ void ADaCreditsPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 		}
 	}
 }
+
+FText ADaCreditsPickupItem::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::Format(LOCTEXT("CreditsPickup_InteractMessage", "Gain {0} Credits."), CreditsAmount);
+}
+
+#undef LOCTEXT_NAMESPACE

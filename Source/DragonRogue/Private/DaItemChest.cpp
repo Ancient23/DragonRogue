@@ -5,6 +5,8 @@
 
 #include "Net/UnrealNetwork.h"
 
+#define LOCTEXT_NAMESPACE "InteractableActors"
+
 // Sets default values
 ADaItemChest::ADaItemChest()
 {
@@ -25,6 +27,18 @@ void ADaItemChest::Interact_Implementation(APawn* InstigatorPawn)
 	OnRep_LidOpened();
 }
 
+FText ADaItemChest::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	if (bLidOpened)
+	{
+		return LOCTEXT("Chest_InteractMessage", "Close Chest");
+	}
+	else
+	{
+		return LOCTEXT("Chest_InteractMessage", "Open Chest");
+	}
+}
+
 void ADaItemChest::OnActorLoaded_Implementation()
 {
 	OnRep_LidOpened();
@@ -42,3 +56,5 @@ void ADaItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(ADaItemChest, bLidOpened);
 }
+
+#undef LOCTEXT_NAMESPACE

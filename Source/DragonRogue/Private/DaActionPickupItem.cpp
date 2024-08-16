@@ -4,6 +4,8 @@
 #include "DaActionPickupItem.h"
 #include "DaActionComponent.h"
 
+#define LOCTEXT_NAMESPACE "InteractableActors"
+
 void ADaActionPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 {
 	if (InstigatorPawn)
@@ -17,3 +19,10 @@ void ADaActionPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 		}
 	}
 }
+
+FText ADaActionPickupItem::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::Format(LOCTEXT("CreditsPickup_InteractMessage", "Receive {0} Ability"), FText::FromName(ActionName));
+}
+
+#undef LOCTEXT_NAMESPACE
