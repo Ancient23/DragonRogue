@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "DaGameModeBase.generated.h"
 
+class UDaMonsterData;
 class ADaPickupItem;
 
 namespace EEnvQueryStatus
@@ -19,6 +20,36 @@ class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
 class AController;
 class UDaSaveGame;
+
+USTRUCT(BlueprintType)
+struct FMonsterInfoRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+
+	FMonsterInfoRow()
+	{
+		Weight = 1.0f;
+		SpawnCost = 5.0f;
+		KillReward = 20.0f;
+	}
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UDaMonsterData* MonsterData;
+
+	// Relative chance to pick this monster
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Weight;
+
+	// Points require by gamemode to spawn
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SpawnCost;
+
+	// Credits awarded to killer
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float KillReward;
+};
 
 /**
  * 
@@ -43,9 +74,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Pickups")
 	TMap<FGameplayTag, TSubclassOf<ADaPickupItem>> ItemClasses;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category="AI")
-	TSubclassOf<AActor> MinionClass;
+	UDataTable* MonsterTable;
+	
+	//UPROPERTY(EditDefaultsOnly, Category="AI")
+	//TSubclassOf<AActor> MinionClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	UEnvQuery* SpawnBotQuery;
