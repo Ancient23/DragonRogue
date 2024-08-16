@@ -20,6 +20,8 @@ class DRAGONROGUE_API ADaPickupItem : public AActor, public IDaGameplayInterface
 public:
 	
 	void Interact_Implementation(APawn* InstigatorPawn) override;
+
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 	
 	ADaPickupItem();
 	

@@ -25,4 +25,6 @@ public:
 	int32 Cost;
 	
 	void Interact_Implementation(APawn* InstigatorPawn) override;
+
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 };

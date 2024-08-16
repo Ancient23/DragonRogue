@@ -38,6 +38,11 @@ void ADaPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 	// Derived Classes to override
 }
 
+FText ADaPickupItem::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
+}
+
 void ADaPickupItem::MulticastActiveStateChanged_Implementation(AActor* InstigatorActor, bool NewState)
 {
 	if (!NewState)

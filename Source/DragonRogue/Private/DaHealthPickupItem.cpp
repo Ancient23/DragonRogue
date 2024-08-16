@@ -3,8 +3,11 @@
 
 #include "DaHealthPickupItem.h"
 
+#include "DaAttributeComponent.h"
 #include "DaGameplayFunctionLibrary.h"
 #include "DaPlayerState.h"
+
+#define LOCTEXT_NAMESPACE "InteractableActors"
 
 ADaHealthPickupItem::ADaHealthPickupItem()
 {
@@ -14,19 +17,36 @@ ADaHealthPickupItem::ADaHealthPickupItem()
 
 void ADaHealthPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if (InstigatorPawn)
+	if (!ensure(InstigatorPawn))
 	{
-		if (ADaPlayerState* PlayerState = InstigatorPawn->GetInstigatorController()->GetPlayerState<ADaPlayerState>())
+		return;
+	}
+
+	UDaAttributeComponent* AttributeComp = UDaAttributeComponent::GetAttributes(InstigatorPawn);
+	if (ensure(AttributeComp) && !AttributeComp->IsFullHealth())
+	{
+		ADaPlayerState* PlayerState = InstigatorPawn->GetPlayerState<ADaPlayerState>();
+		if (ensure(PlayerState) && PlayerState->GetCredits() >= Cost)
 		{
-			if (PlayerState->GetCredits() >= Cost)
+			if (UDaGameplayFunctionLibrary::ApplyHealing(this, InstigatorPawn, HealthAmount))
 			{
-				if (UDaGameplayFunctionLibrary::ApplyHealing(this, InstigatorPawn, HealthAmount))
-				{
-					PlayerState->AdjustCredits(-Cost);
-					
-					HideAndCooldownItem(InstigatorPawn);
-				}
+				PlayerState->AdjustCredits(-Cost);
+			
+				HideAndCooldownItem(InstigatorPawn);
 			}
 		}
 	}
 }
+
+FText ADaHealthPickupItem::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	UDaAttributeComponent* AttributeComp = UDaAttributeComponent::GetAttributes(InstigatorPawn);
+	if (AttributeComp && AttributeComp->IsFullHealth())
+	{
+		return LOCTEXT("HealthPotion_FullHealthWarning", "Health is already full.");
+	}
+
+	return FText::Format(LOCTEXT("HealthPotion_InteractMessage", "Cost {0} Credits to restore health to {1}"), Cost, HealthAmount);
+}
+
+#undef LOCTEXT_NAMESPACE
