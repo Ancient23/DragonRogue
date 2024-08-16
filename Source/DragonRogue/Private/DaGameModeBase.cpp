@@ -3,6 +3,7 @@
 
 #include "DaGameModeBase.h"
 
+#include "DaActionComponent.h"
 #include "DaAttributeComponent.h"
 #include "DaCharacter.h"
 #include "DaPickupItem.h"
@@ -173,7 +174,21 @@ void ADaGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper
 
 			SelectedRow->SpawnCost;
 			
-			AActor* Monster = GetWorld()->SpawnActor<AActor>(SelectedRow->MonsterData->MonsterClass, Locations[0], FRotator::ZeroRotator);
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(SelectedRow->MonsterData->MonsterClass, Locations[0], FRotator::ZeroRotator);
+			if (NewBot)
+			{
+				LogOnScreen(this, FString::Printf(TEXT("Spawned Enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(SelectedRow->MonsterData)));
+
+				// Grant Special Actions, Buffs, etc
+				UDaActionComponent* ActionComp = Cast<UDaActionComponent>(NewBot->GetComponentByClass(UDaActionComponent::StaticClass()));
+				if (ActionComp)
+				{
+					for (TSubclassOf<UDaAction> ActionClass : SelectedRow->MonsterData->Actions)
+					{
+						ActionComp->AddAction(NewBot, ActionClass);
+					}
+				}
+			}
 			
 		}
 
