@@ -202,7 +202,12 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		// AI Character was killed. Grant Credits to player
 		ADaPlayerState* PlayerState = Cast<ADaPlayerState>(PlayerActor->GetPlayerState());
 		ensureAlways(PlayerState);
-		PlayerState->AdjustCredits(CreditsPerKill);
+
+		// @FIXME: Crash when action effect kills AI, but Player was killed first. 
+		if (PlayerState)
+		{
+			PlayerState->AdjustCredits(CreditsPerKill);
+		}
 	}
 
 	LOG("OnActorKilled: Victim: %s, Killer: %s", *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
