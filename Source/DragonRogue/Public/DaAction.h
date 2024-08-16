@@ -34,7 +34,7 @@ class DRAGONROGUE_API UDaAction : public UObject
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
-	UTexture2D* Icon;
+	TSoftObjectPtr<UTexture2D> Icon;
 	
 	UFUNCTION(BlueprintCallable, Category="Action")
 	UDaActionComponent* GetOwningComponent() const;
