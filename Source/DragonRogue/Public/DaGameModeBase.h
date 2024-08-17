@@ -36,7 +36,8 @@ public:
 	}
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UDaMonsterData* MonsterData;
+	FPrimaryAssetId MonsterId;
+	//UDaMonsterData* MonsterData;
 
 	// Relative chance to pick this monster
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -107,6 +108,8 @@ protected:
 	
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
+
+	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation);
 	
 public:
 
