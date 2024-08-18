@@ -42,7 +42,7 @@ ADaExplosiveBarrel::ADaExplosiveBarrel()
 	bReplicates = true;
 }
 
-void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ADaExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	bool bDebug = CVarDebugExplosiveItem.GetValueOnGameThread();
 	
@@ -56,7 +56,7 @@ void ADaExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComp, AActor* Ot
 		RadialForceComp->FireImpulse();
 
 		// if its a player with an attribute component hit it hard
-		bool bDamaged = UDaGameplayFunctionLibrary::ApplyDamage(this, OtherActor, -DamageAmount);
+		bool bDamaged = UDaGameplayFunctionLibrary::ApplyDamage(this, OtherActor, DamageAmount);
 
 		if (bDebug)
 		{
@@ -71,7 +71,7 @@ void ADaExplosiveBarrel::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	StaticMeshComp->OnComponentHit.AddDynamic(this, &ADaExplosiveBarrel::OnComponentHit);
+	StaticMeshComp->OnComponentHit.AddDynamic(this, &ADaExplosiveBarrel::OnActorHit);
 }
 
 void ADaExplosiveBarrel::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
