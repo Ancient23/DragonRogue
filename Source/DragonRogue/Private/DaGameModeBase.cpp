@@ -162,27 +162,22 @@ void ADaGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper
 	}
 
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
-	if (Locations.IsValidIndex(0))
+	if (Locations.IsValidIndex(0) && MonsterTable)
 	{
-		if (MonsterTable)
-		{
-			LogOnScreen(this, "Begin Loading", FColor::Yellow);
+		LogOnScreen(this, "Begin Loading", FColor::Yellow);
 
-			TArray<FMonsterInfoRow*> Rows;
-			MonsterTable->GetAllRows("", Rows);
+		TArray<FMonsterInfoRow*> Rows;
+		MonsterTable->GetAllRows("", Rows);
 
-			//Get Random Enemy
-			int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
-			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
+		//Get Random Enemy
+		int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
+		FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
 
-			UAssetManager* AssMan = UAssetManager::GetIfInitialized();
-			if (ensure(AssMan))
-			{
-				TArray<FName> Bundles; 
-				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ADaGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
-				AssMan->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
-			}
-		}
+		UAssetManager& AssMan = UAssetManager::Get();
+
+		TArray<FName> Bundles; 
+		FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ADaGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
+		AssMan.LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
 	}
 }
 
@@ -190,29 +185,26 @@ void ADaGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoc
 {
 	LogOnScreen(this, "Finished Loading", FColor::Green);
 	
-	UAssetManager* AssMan = UAssetManager::GetIfInitialized();
-	if (ensure(AssMan))
-	{
-		UDaMonsterData* MonsterData = Cast<UDaMonsterData>(AssMan->GetPrimaryAssetObject(LoadedId));
-		if (MonsterData)
-		{
-			AActor* Monster = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
-			if (Monster)
-			{
-				LogOnScreen(this, FString::Printf(TEXT("Spawned Enemy: %s (%s)"), *GetNameSafe(Monster), *GetNameSafe(MonsterData)));
-				UDaActionComponent* ActionComp = Cast<UDaActionComponent>(Monster->GetComponentByClass(UDaActionComponent::StaticClass()));
-				if (ActionComp)
-				{
-					for (TSubclassOf<UDaAction> ActionClass : MonsterData->Actions)
-					{
-						ActionComp->AddAction(Monster, ActionClass);
-					}
-				}
+	UAssetManager& AssMan = UAssetManager::Get();
 
+	UDaMonsterData* MonsterData = Cast<UDaMonsterData>(AssMan.GetPrimaryAssetObject(LoadedId));
+	if (MonsterData)
+	{
+		AActor* Monster = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+		if (Monster)
+		{
+			LogOnScreen(this, FString::Printf(TEXT("Spawned Enemy: %s (%s)"), *GetNameSafe(Monster), *GetNameSafe(MonsterData)));
+			UDaActionComponent* ActionComp = Cast<UDaActionComponent>(Monster->GetComponentByClass(UDaActionComponent::StaticClass()));
+			if (ActionComp)
+			{
+				for (TSubclassOf<UDaAction> ActionClass : MonsterData->Actions)
+				{
+					ActionComp->AddAction(Monster, ActionClass);
+				}
 			}
 		}
 	}
-
+	
 	if (CVarDebugSpawnBots.GetValueOnGameThread())
 	{
 		DrawDebugSphere(GetWorld(), SpawnLocation, 50.0f, 20, FColor::Blue, false, 60.f);
