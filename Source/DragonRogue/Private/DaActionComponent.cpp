@@ -8,6 +8,7 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
+DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_DREAMAWAKE);
 
 UDaActionComponent::UDaActionComponent()
 {
@@ -94,6 +95,8 @@ void UDaActionComponent::RemoveAction(UDaAction* ActionToRemove)
 
 bool UDaActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
+	SCOPE_CYCLE_COUNTER(STAT_StartActionByName);
+	
 	for (UDaAction* Action : Actions)
 	{
 		if (Action && Action->ActionName == ActionName)

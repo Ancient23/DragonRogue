@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+DECLARE_STATS_GROUP(TEXT("DREAMAWAKE_Game"), STATGROUP_DREAMAWAKE, STATCAT_Advanced);
+
 // custom log category
 DECLARE_LOG_CATEGORY_EXTERN(DragonRogue, Log, All);
 
