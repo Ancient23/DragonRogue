@@ -74,20 +74,6 @@ void ADaExplosiveBarrel::PostInitializeComponents()
 	StaticMeshComp->OnComponentHit.AddDynamic(this, &ADaExplosiveBarrel::OnComponentHit);
 }
 
-
-// Called when the game starts or when spawned
-void ADaExplosiveBarrel::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
-void ADaExplosiveBarrel::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void ADaExplosiveBarrel::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
