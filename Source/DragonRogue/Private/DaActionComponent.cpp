@@ -39,6 +39,7 @@ void UDaActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	//FString DebugMsg = GetNameSafe(GetOwner()) + " " + ActiveGameplayTags.ToStringSimple();
 	//GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 
+	// TODO: DEBUG - ENABLE ONLY WITH CVAR
 	// Draw All Actions
 	for (UDaAction* Action : Actions)
 	{
@@ -114,6 +115,9 @@ bool UDaActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 			{
 				ServerStartAction(Instigator, ActionName);
 			}
+
+			// Bookmark here to mark when this happens in Unreal Insights.
+			TRACE_BOOKMARK(TEXT("StartAction::%s"), *GetNameSafe(Action));
 			
 			Action->StartAction(Instigator);
 			return true;
