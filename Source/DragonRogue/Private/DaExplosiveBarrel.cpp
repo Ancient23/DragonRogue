@@ -2,11 +2,8 @@
 
 
 #include "DaExplosiveBarrel.h"
-#include "DaAttributeComponent.h"
-#include "AssetTypeCategories.h"
 #include "DaGameplayFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
-#include "PhysicsEngine/PhysicsSettings.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
 static TAutoConsoleVariable<bool> CVarDebugExplosiveItem(TEXT("da.DebugExplosiveItem"), false, TEXT("Enable Debug Drawing for Explosive Level Items"), ECVF_Cheat);
