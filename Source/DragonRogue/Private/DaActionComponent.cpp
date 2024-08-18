@@ -31,6 +31,21 @@ void UDaActionComponent::BeginPlay()
 	bHasBegunPlay = true;
 }
 
+void UDaActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	// Stop all - make a copy of array in case main array is being mutated
+	TArray<UDaAction*> ActionsCopy = Actions;
+	for (UDaAction* Action : ActionsCopy)
+	{
+		if (Action && Action->IsRunning())
+		{
+			Action->StopAction(GetOwner());
+		}
+	}
+	
+	Super::EndPlay(EndPlayReason);
+}
+
 void UDaActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
