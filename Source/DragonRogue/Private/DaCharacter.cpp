@@ -12,6 +12,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -30,6 +31,11 @@ ADaCharacter::ADaCharacter()
 	SpringArmComp->bUsePawnControlRotation = true;
 	SpringArmComp->SetupAttachment(RootComponent);
 
+	// We control the rotation of spring arm with pawn control rotation already, this disables a subtle side effect
+	// where rotating our CapsuleComponent (eg. caused by bOrientRotationToMovement in Character Movement) will rotate our spring arm until it self corrects later in the update
+	// This may cause unwanted effects when using CameraLocation during Tick as it may be slightly offset from our final camera position.
+	SpringArmComp->SetUsingAbsoluteRotation(true);
+	
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(SpringArmComp);
 
@@ -40,9 +46,17 @@ ADaCharacter::ADaCharacter()
 	ActionComp = CreateDefaultSubobject<UDaActionComponent>("ActionComp");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	
 	bUseControllerRotationYaw = false;
 
+	// Skip performing overlap queries on the Physics Asset after animation (7 queries in case of our Gideon mesh)
+	GetMesh()->bUpdateOverlapsOnAnimationFinalize = false;
+
+	// Enabled on mesh to react to incoming projectiles
+	GetMesh()->SetGenerateOverlapEvents(true);
+	// Disable on capsule collision to avoid double-dipping and receiving 2 overlaps when entering trigger zones etc.
+	// Once from the mesh, and 2nd time from capsule
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	
 	TimeToHitParamName = "TimeToHit";
 	HitFlashColorParamName = "FlashColor";
 }
