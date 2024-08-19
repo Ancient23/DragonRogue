@@ -91,6 +91,11 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 		}
 	}
 
+	if (!IsAlive())
+	{
+		return 0.0f;
+	}
+	
 	float OldHealth = Health;
 	float NewHealth = FMath::Clamp(Health+Delta, 0, HealthMax);
 	float ActualDelta = NewHealth - OldHealth;
@@ -109,6 +114,8 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 			ADaGameModeBase* Gamemode = GetWorld()->GetAuthGameMode<ADaGameModeBase>();
 			if (Gamemode)
 			{
+				// catch any issues where actions or effects (like thorns on both killer and victim) may be causing infinite damage or damage reflections
+				ensureAlways(Health==NewHealth);
 				Gamemode->OnActorKilled(GetOwner(), InstigatorActor);
 			}
 		}
