@@ -37,7 +37,7 @@ void ADaGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	UDaSaveGameSubsystem* SG = GetGameInstance<UDaSaveGameSubsystem>();
+	UDaSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<UDaSaveGameSubsystem>();
 	
 	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
 	SG->LoadSaveGame(SelectedSaveSlot);
@@ -250,7 +250,7 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		}
 		
 		// Immediatly AutoSave on Player Death
-		UDaSaveGameSubsystem* SG = GetGameInstance<UDaSaveGameSubsystem>();
+	UDaSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<UDaSaveGameSubsystem>();
 		SG->WriteSaveGame();
 	}
 	else if (ADaCharacter* PlayerActor = Cast<ADaCharacter>(KillerActor))
