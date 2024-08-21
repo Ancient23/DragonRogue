@@ -19,7 +19,6 @@ class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
 class AController;
-class UDaSaveGame;
 
 USTRUCT(BlueprintType)
 struct FMonsterInfoRow : public FTableRowBase
@@ -61,11 +60,6 @@ class DRAGONROGUE_API ADaGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 protected:
-
-	FString SlotName;
-	
-	UPROPERTY()
-	UDaSaveGame* CurrentSaveGame;
 	
 	UPROPERTY(EditAnywhere, Category="Credits")
 	int32 CreditsPerKill;
@@ -79,8 +73,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	UDataTable* MonsterTable;
 	
-	//UPROPERTY(EditDefaultsOnly, Category="AI")
-	//TSubclassOf<AActor> MinionClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ruleset")
+	bool bAutoRespawnPlayer;
 	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	UEnvQuery* SpawnBotQuery;
@@ -123,11 +117,6 @@ public:
 
 	UFUNCTION(Exec)
 	void KillAll();
-
-	UFUNCTION(BlueprintCallable, Category="SaveGame")
-	void WriteSaveGame();
-
-	void LoadSaveGame();
 
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

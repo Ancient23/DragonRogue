@@ -15,7 +15,7 @@ public:
 
 	// ID of Actor
 	UPROPERTY()
-	FString ActorName;
+	FName ActorName;
 
 	// For Movable Actors
 	UPROPERTY()
@@ -23,6 +23,37 @@ public:
 
 	UPROPERTY()
 	TArray<uint8> ByteData;
+};
+
+USTRUCT()
+struct FPlayerSaveData
+{
+	GENERATED_BODY()
+
+public:
+
+	/* Player Id defined by the online sub system (such as Steam) converted to FString for simplicity  */ 
+	UPROPERTY()
+	int32 PlayerID;
+
+	UPROPERTY()
+	int32 Credits;
+
+	/* Longest survival time */
+	UPROPERTY()
+	float PersonalRecordTime;
+
+	/* Location if player was alive during save */
+	UPROPERTY()
+	FVector Location;
+
+	/* Orientation if player was alive during save */ 
+	UPROPERTY()
+	FRotator Rotation;
+
+	/* We don't always want to restore location, and may just resume player at specific respawn point in world. */
+	UPROPERTY()
+	bool bResumeAtTransform;
 };
 
 /**
@@ -36,9 +67,11 @@ class DRAGONROGUE_API UDaSaveGame : public USaveGame
 public:
 
 	UPROPERTY()
-	int32 Credits;
+	TArray<FPlayerSaveData> SavedPlayers;
 
 	UPROPERTY()
 	TArray<FActorSaveData> SavedActors;
-	
+
+	FPlayerSaveData* GetPlayerData(APlayerState* PlayerState);
+
 };
