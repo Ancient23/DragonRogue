@@ -34,7 +34,7 @@ public:
 
 	/* Player Id defined by the online sub system (such as Steam) converted to FString for simplicity  */ 
 	UPROPERTY()
-	int32 PlayerID;
+	FString PlayerID;
 
 	UPROPERTY()
 	int32 Credits;

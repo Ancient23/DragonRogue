@@ -89,8 +89,8 @@ void ADaPlayerState::SavePlayerState_Implementation(UDaSaveGame* SaveObject)
 		SaveData.PersonalRecordTime = PersonalRecordTime;
 
 		// Stored as FString for simplicity (original Steam ID is uint64)
-		//SaveData.PlayerID = GetUniqueId().ToString();
-		SaveData.PlayerID = GetPlayerId();
+		SaveData.PlayerID = GetUniqueId()->ToString();
+		//SaveData.PlayerID = GetPlayerId();
 		
 		// May not be alive while we save
 		if (APawn* MyPawn = GetPawn())
