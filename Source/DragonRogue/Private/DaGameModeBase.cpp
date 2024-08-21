@@ -8,7 +8,6 @@
 #include "DaCharacter.h"
 #include "DaPickupItem.h"
 #include "DaPlayerState.h"
-#include "DaSaveGame.h"
 #include "AI/DaAICharacter.h"
 #include "DragonRogue/DragonRogue.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -17,8 +16,8 @@
 #include "DragonRogue/DaConstants.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "DaMonsterData.h"
+#include "DaSaveGameSubsystem.h"
 #include "Engine/AssetManager.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("da.SpawnBots"), true, TEXT("Enable Spawning of Bots with Timer"), ECVF_Cheat);
@@ -31,20 +30,17 @@ ADaGameModeBase::ADaGameModeBase()
 	CreditsPerKill = 10;
 	MaxBotsOverride = 0;
 
-	SlotName = "Savegame01";
+	bAutoRespawnPlayer = true;
 }
 
 void ADaGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
-	if (SelectedSaveSlot.Len() > 0)
-	{
-		SlotName = SelectedSaveSlot;
-	}
+	UDaSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<UDaSaveGameSubsystem>();
 	
-	LoadSaveGame();
+	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
+	SG->LoadSaveGame(SelectedSaveSlot);
 }
 
 void ADaGameModeBase::StartPlay()
@@ -237,12 +233,25 @@ void ADaGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 	ADaCharacter* Player = Cast<ADaCharacter>(VictimActor);
 	if (Player)
 	{
-		FTimerHandle TimerHandle_RespawnDelay;
-
-		float RespondDelay = 2.0f;
-		FTimerDelegate Delegate;
-		Delegate.BindUObject(this, &ThisClass::RespawnPlayerElapsed, Player->GetController());
-		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespondDelay, false);
+		if (bAutoRespawnPlayer)
+		{
+			FTimerHandle TimerHandle_RespawnDelay;
+			float RespondDelay = 2.0f;
+			FTimerDelegate Delegate;
+			Delegate.BindUObject(this, &ThisClass::RespawnPlayerElapsed, Player->GetController());
+			GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespondDelay, false);
+		}
+		
+		// Store time if it was better than previous record
+		ADaPlayerState* PS = Player->GetPlayerState<ADaPlayerState>();
+		if (PS)
+		{
+			PS->UpdatePersonalRecord(GetWorld()->TimeSeconds);
+		}
+		
+		// Immediatly AutoSave on Player Death
+	UDaSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<UDaSaveGameSubsystem>();
+		SG->WriteSaveGame();
 	}
 	else if (ADaCharacter* PlayerActor = Cast<ADaCharacter>(KillerActor))
 	{
@@ -273,110 +282,15 @@ void ADaGameModeBase::RespawnPlayerElapsed(AController* Controller)
 	}
 }
 
-void ADaGameModeBase::WriteSaveGame()
-{
-	// Iterate all player states, need proper ID to match (Steam or EOS)
-	for (int32 i = 0; GameState->PlayerArray.Num(); i++)
-	{
-		ADaPlayerState* PS = Cast<ADaPlayerState>(GameState->PlayerArray[i]);
-		if (PS)
-		{
-			PS->SavePlayerState(CurrentSaveGame);
-			break; // simple player only, for multiplayer would need to store a map of ID->PlayerState
-		}
-	}
-
-	// clear list before we add to it
-	CurrentSaveGame->SavedActors.Empty();
-	
-	for (FActorIterator It(GetWorld()); It; ++It)
-	{
-		AActor* Actor = *It;
-
-		// Only our gameplay actors
-		if (!Actor->Implements<UDaGameplayInterface>())
-		{
-			continue;
-		}
-
-		FActorSaveData ActorData;
-		ActorData.ActorName = Actor->GetName();
-		ActorData.Transform = Actor->GetActorTransform();
-
-		FMemoryWriter MemoryWriter(ActorData.ByteData);
-		FObjectAndNameAsStringProxyArchive Ar(MemoryWriter, true);
-		// Finds only variables marked with SaveGame in UPROPERTY
-		Ar.ArIsSaveGame = true;
-		// Converts actor's SaveGame UPROPERTIES into Binary array
-		Actor->Serialize(Ar);
-		
-		CurrentSaveGame->SavedActors.Add(ActorData);
-	}
-	
-	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
-}
-
-void ADaGameModeBase::LoadSaveGame()
-{
-	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
-	{
-		CurrentSaveGame = Cast<UDaSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
-		if (CurrentSaveGame == nullptr)
-		{
-			LOG_WARNING("Failed to load save game data.")
-			return;
-		}
-
-		LOG("Loaded Save Game data.")
-
-		for (FActorIterator It(GetWorld()); It; ++It)
-		{
-			AActor* Actor = *It;
-
-			// Only our gameplay actors
-			if (!Actor->Implements<UDaGameplayInterface>())
-			{
-				continue;
-			}
-
-			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
-			{
-				if (ActorData.ActorName == Actor->GetName())
-				{
-					Actor->SetActorTransform(ActorData.Transform);
-
-					FMemoryReader MemoryReader(ActorData.ByteData);
-
-					FObjectAndNameAsStringProxyArchive Ar(MemoryReader, true);
-					// Finds only variables marked with SaveGame in UPROPERTY
-					Ar.ArIsSaveGame = true;
-					// Convert binary array back to actors variables
-					Actor->Serialize(Ar);
-
-					IDaGameplayInterface::Execute_OnActorLoaded(Actor);
-					
-					break;
-				}
-			}
-		}
-	}
-	else
-	{
-		CurrentSaveGame = Cast<UDaSaveGame>(UGameplayStatics::CreateSaveGameObject(UDaSaveGame::StaticClass()));
-
-		LOG("Created new Save Game data.")
-	}
-}
-
 void ADaGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
 
-	ADaPlayerState* PS = NewPlayer->GetPlayerState<ADaPlayerState>();
-	if (PS)
-	{
-		PS->LoadPlayerState(CurrentSaveGame);
-	}
+	UDaSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<UDaSaveGameSubsystem>();
+	SG->HandleStartingNewPlayer(NewPlayer);
 
 	// Will call BeginPlaying State in Player Controller so make sure our data is setup before this calls super
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	// Override spawn location
+	SG->OverrideSpawnTransform(NewPlayer);
 }
