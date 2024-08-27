@@ -54,6 +54,15 @@ public:
 	/* We don't always want to restore location, and may just resume player at specific respawn point in world. */
 	UPROPERTY()
 	bool bResumeAtTransform;
+
+	FPlayerSaveData()
+	{
+		Credits = 0;
+		PersonalRecordTime = 0.0f;
+		Location = FVector::ZeroVector;
+		Rotation = FRotator::ZeroRotator;
+		bResumeAtTransform = true;
+	}
 };
 
 /**
