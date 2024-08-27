@@ -205,6 +205,7 @@ void UDaActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UDaActionComponent, Actions);
+	DOREPLIFETIME(UDaActionComponent, AttributeMods);
 	
 }
 

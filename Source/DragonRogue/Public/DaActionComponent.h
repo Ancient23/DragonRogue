@@ -11,6 +11,42 @@ class UDaAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, UDaActionComponent*, OwningComp, UDaAction*, Action);
 
+UENUM()
+enum EAttributeModifierOperations
+{
+	NONE UMETA(DisplayName = "None"),
+	ADD_DELTA UMETA(DisplayName = "Add Delta"),
+	ADD_BASE UMETA(DisplayName = "Add Base"),
+	ADD_MULTIPLIER UMETA(DisplayName = "Add Multiplier"),
+	OVERRIDE_BASE UMETA(DisplayName = "Override Base")
+};
+
+USTRUCT(BlueprintType)
+struct FAttributeModifier
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTag AttributeTag;
+
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EAttributeModifierOperations> ModifierOperation;
+	
+	UPROPERTY(EditAnywhere)
+	float Magnitude;
+
+	UPROPERTY(EditAnywhere)
+	FRuntimeFloatCurve Curve;
+
+	FAttributeModifier()
+	{
+		Magnitude = 0.0f;
+		ModifierOperation = EAttributeModifierOperations::NONE;
+	}
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DRAGONROGUE_API UDaActionComponent : public UActorComponent
 {
@@ -63,6 +99,9 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<TObjectPtr<UDaAction>> Actions;
+
+	UPROPERTY(EditAnywhere, Replicated, Category="Attributes")
+	TArray<FAttributeModifier> AttributeMods;
 	
 	virtual void BeginPlay() override;
 
