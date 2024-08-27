@@ -104,12 +104,12 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	{
 		Health = NewHealth;
 
-		if (ActualDelta != 0.0f)
+		if (!FMath::IsNearlyZero(ActualDelta))
 		{
 			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
 		}
 
-		if (ActualDelta < 0.0f && Health == 0.f)
+		if (ActualDelta < 0.0f && FMath::IsNearlyZero(Health))
 		{
 			ADaGameModeBase* Gamemode = GetWorld()->GetAuthGameMode<ADaGameModeBase>();
 			if (Gamemode)
@@ -121,7 +121,7 @@ bool UDaAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 		}
 	}
 	
-	return ActualDelta != 0;
+	return !FMath::IsNearlyZero(ActualDelta);
 }
 
 void UDaAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
@@ -202,7 +202,7 @@ bool UDaAttributeComponent::LowHealth() const
 
 bool UDaAttributeComponent::IsFullHealth() const
 {
-	return Health == HealthMax;
+	return FMath::IsNearlyEqual(Health, HealthMax);
 }
 
 float UDaAttributeComponent::GetHealth() const
