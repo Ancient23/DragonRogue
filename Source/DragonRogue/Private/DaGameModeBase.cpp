@@ -54,12 +54,6 @@ void ADaGameModeBase::StartPlay()
 	{
 		StartSpawningBots();
 	}
-	
-	// UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnItemQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
-	// if (ensure(QueryInstance))
-	// {
-	// 	QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ADaGameModeBase::OnSpawnItemQueryCompleted);
-	// }
 
 	// Skip the Blueprint wrapper and use the direct C++ option which the Wrapper uses as well
 	FEnvQueryRequest Request(SpawnItemQuery, this);
@@ -198,7 +192,7 @@ void ADaGameModeBase::OnSpawnBotQueryCompleted(TSharedPtr<FEnvQueryResult> Resul
 	QueryResult->GetAllAsLocations(Locations);
 	if (Locations.IsValidIndex(0) && MonsterTable)
 	{
-		LogOnScreen(this, "Begin Loading", FColor::Yellow);
+		//LogOnScreen(this, "Begin Loading", FColor::Yellow);
 
 		TArray<FMonsterInfoRow*> Rows;
 		MonsterTable->GetAllRows("", Rows);
@@ -217,7 +211,7 @@ void ADaGameModeBase::OnSpawnBotQueryCompleted(TSharedPtr<FEnvQueryResult> Resul
 
 void ADaGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
 {
-	LogOnScreen(this, "Finished Loading", FColor::Green);
+	//LogOnScreen(this, "Finished Loading", FColor::Green);
 	
 	UAssetManager& AssMan = UAssetManager::Get();
 
