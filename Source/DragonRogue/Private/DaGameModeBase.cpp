@@ -121,9 +121,10 @@ void ADaGameModeBase::SpawnBotTimerElapsed()
 	}
 	
 	int32 NumberOfAliveBots = 0;
-	for (TActorIterator<ADaAICharacter> It(GetWorld()); It; ++It)
+	//for (TActorIterator<ADaAICharacter> It(GetWorld()); It; ++It)
+	for(ADaAICharacter* Bot : TActorRange<ADaAICharacter>(GetWorld()))
 	{
-		ADaAICharacter* Bot = *It;
+		//ADaAICharacter* Bot = *It;
 
 		UDaAttributeComponent* AttribComp = UDaAttributeComponent::GetAttributes(Bot);
 		if (ensure(AttribComp) && AttribComp->IsAlive())
@@ -215,10 +216,8 @@ void ADaGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoc
 
 void ADaGameModeBase::KillAll()
 {
-	for (TActorIterator<ADaAICharacter> It(GetWorld()); It; ++It)
+	for(ADaAICharacter* Bot : TActorRange<ADaAICharacter>(GetWorld()))
 	{
-		ADaAICharacter* Bot = *It;
-
 		UDaAttributeComponent* AttribComp = UDaAttributeComponent::GetAttributes(Bot);
 		if (ensure(AttribComp) && AttribComp->IsAlive())
 		{
