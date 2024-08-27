@@ -12,9 +12,9 @@ ADaTargetDummy::ADaTargetDummy()
 	RootComponent = MeshComp;
 
 	AttributeComp = CreateDefaultSubobject<UDaAttributeComponent>("AttributeComp");
-	AttributeComp->OnHealthChanged.AddDynamic(this, &ADaTargetDummy::OnHealthChanged);
 
 }
+
 
 void ADaTargetDummy::OnHealthChanged(AActor* InstigatorActor, UDaAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
@@ -22,5 +22,12 @@ void ADaTargetDummy::OnHealthChanged(AActor* InstigatorActor, UDaAttributeCompon
 	{
 		MeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
 	}
+}
+
+void ADaTargetDummy::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ADaTargetDummy::OnHealthChanged);
 }
 
