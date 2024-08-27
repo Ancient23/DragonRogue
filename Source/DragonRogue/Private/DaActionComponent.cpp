@@ -109,13 +109,13 @@ void UDaActionComponent::RemoveAction(UDaAction* ActionToRemove)
 	Actions.Remove(ActionToRemove);
 }
 
-bool UDaActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
+bool UDaActionComponent::StartActionByName(AActor* Instigator, FGameplayTag ActionName)
 {
 	SCOPE_CYCLE_COUNTER(STAT_StartActionByName);
 	
 	for (UDaAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (Action && Action->ActivationTag == ActionName)
 		{
 			if (!Action->CanStart(Instigator))
 			{
@@ -141,11 +141,11 @@ bool UDaActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 	return false;
 }
 
-bool UDaActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
+bool UDaActionComponent::StopActionByName(AActor* Instigator, FGameplayTag ActionName)
 {
 	for (UDaAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (Action && Action->ActivationTag == ActionName)
 		{
 			if (Action->IsRunning())
 			{
@@ -164,11 +164,11 @@ bool UDaActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	return false;
 }
 
-bool UDaActionComponent::ContainsActionWithName(FName ActionName)
+bool UDaActionComponent::ContainsActionWithName(FGameplayTag ActionName)
 {
 	for (UDaAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (Action && Action->ActivationTag == ActionName)
 		{
 			return true;
 		}
@@ -177,11 +177,11 @@ bool UDaActionComponent::ContainsActionWithName(FName ActionName)
 	return false;
 }
 
-float UDaActionComponent::GetActionCostByName(FName ActionName)
+float UDaActionComponent::GetActionCostByName(FGameplayTag ActionName)
 {
 	for (UDaAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (Action && Action->ActivationTag == ActionName)
 		{
 			return Action->CostToActivate;
 		}
@@ -190,12 +190,12 @@ float UDaActionComponent::GetActionCostByName(FName ActionName)
 	return 0.0f;
 }
 
-void UDaActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
+void UDaActionComponent::ServerStartAction_Implementation(AActor* Instigator, FGameplayTag ActionName)
 {
 	StartActionByName(Instigator, ActionName);
 }
 
-void UDaActionComponent::ServerStopAction_Implementation(AActor* Instigator, FName ActionName)
+void UDaActionComponent::ServerStopAction_Implementation(AActor* Instigator, FGameplayTag ActionName)
 {
 	StopActionByName(Instigator, ActionName);
 }

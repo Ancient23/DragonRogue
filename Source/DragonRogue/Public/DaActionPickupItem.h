@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DaPickupItem.h"
+#include "GameplayTagContainer.h"
 #include "DaActionPickupItem.generated.h"
 
 class UDaAction;
@@ -18,7 +19,7 @@ class DRAGONROGUE_API ADaActionPickupItem : public ADaPickupItem
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Actions")
-	FName ActionName;
+	FGameplayTag ActionName;
 	
 	UPROPERTY(EditAnywhere, Category="Actions")
 	TSubclassOf<UDaAction> ActionClass;

@@ -33,16 +33,16 @@ public:
 	void RemoveAction(UDaAction* ActionToRemove);
 	
 	UFUNCTION(BlueprintCallable, Category="Actions")
-	bool StartActionByName(AActor* Instigator, FName ActionName);
+	bool StartActionByName(AActor* Instigator, FGameplayTag ActionName);
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
-	bool StopActionByName(AActor* Instigator, FName ActionName);
+	bool StopActionByName(AActor* Instigator, FGameplayTag ActionName);
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
-	bool ContainsActionWithName(FName ActionName);
+	bool ContainsActionWithName(FGameplayTag ActionName);
 	
 	UFUNCTION(BlueprintCallable, Category="Actions")
-	float GetActionCostByName(FName ActionName);
+	float GetActionCostByName(FGameplayTag ActionName);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnActionStateChanged OnActionStarted;
@@ -53,10 +53,10 @@ public:
 protected:
 
 	UFUNCTION(Server, Reliable)
-	void ServerStartAction(AActor* Instigator, FName ActionName);
+	void ServerStartAction(AActor* Instigator, FGameplayTag ActionName);
 
 	UFUNCTION(Server, Reliable)
-	void ServerStopAction(AActor* Instigator, FName ActionName);
+	void ServerStopAction(AActor* Instigator, FGameplayTag ActionName);
 	
 	UPROPERTY(EditAnywhere, Category="Actions")
 	TArray<TSubclassOf<UDaAction>> DefaultActions;

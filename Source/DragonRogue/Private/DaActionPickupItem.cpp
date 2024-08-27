@@ -22,7 +22,7 @@ void ADaActionPickupItem::Interact_Implementation(APawn* InstigatorPawn)
 
 FText ADaActionPickupItem::GetInteractText_Implementation(APawn* InstigatorPawn)
 {
-	return FText::Format(LOCTEXT("CreditsPickup_InteractMessage", "Receive {0} Ability"), FText::FromName(ActionName));
+	return FText::Format(LOCTEXT("CreditsPickup_InteractMessage", "Receive {0} Ability"), FText::FromName(ActionName.GetTagName()));
 }
 
 #undef LOCTEXT_NAMESPACE

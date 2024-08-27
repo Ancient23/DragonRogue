@@ -111,7 +111,7 @@ void ADaGameModeBase::OnSpawnItemQueryCompleted(TSharedPtr<FEnvQueryResult> Resu
 			CurrentType=0;
 		}
 		
-		if (!CurrentTag.MatchesTag(TAG_PICKUP))
+		if (!CurrentTag.MatchesTag(SharedGameplayTags::TAG_PICKUP))
 		{
 			LOG_WARNING("Non Matching Pickup GameplayTag: %s", *CurrentTag.ToString());
 			continue;

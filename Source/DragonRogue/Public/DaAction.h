@@ -82,7 +82,7 @@ public:
 	
 	// Note: FName is hashed (FString is not)
 	UPROPERTY(EditDefaultsOnly, Category="Action")
-	FName ActionName;
+	FGameplayTag ActivationTag;
 
 	virtual UWorld* GetWorld() const override;
 

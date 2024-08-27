@@ -8,14 +8,13 @@
 #include "DaGameplayFunctionLibrary.h"
 #include "DaInteractionComponent.h"
 #include "DaPlayerController.h"
-#include "DaPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "DragonRogue/DaConstants.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Util/ColorConstants.h"
 
 static TAutoConsoleVariable<bool> CVarDebugPlayerArrows(TEXT("da.DrawPlayerOrientation"), false, TEXT("Enable Debug Draw of Player Actor and Pawn Orientation arrows"), ECVF_Cheat);
@@ -147,37 +146,38 @@ void ADaCharacter::LookStick(const FInputActionValue& InputValue)
 
 void ADaCharacter::SprintStart()
 {
-	ActionComp->StartActionByName(this, "Sprint");
+	ActionComp->StartActionByName(this, SharedGameplayTags::Action_Sprint);
 }
 
 void ADaCharacter::SprintStop()
 {
-	ActionComp->StopActionByName(this, "Sprint");
+	ActionComp->StopActionByName(this, SharedGameplayTags::Action_Sprint);
 }
 
 void ADaCharacter::PrimaryAttack()
-{	
-	ActionComp->StartActionByName(this, "PrimaryAttack");
+{
+	//static FGameplayTag ActivationTag = FGameplayTag::RequestGameplayTag("Action.PrimaryAttack");
+	ActionComp->StartActionByName(this, SharedGameplayTags::Action_PrimaryAttack);
 }
 
 void ADaCharacter::SecondaryAttack()
 {
-	float RageCost = ActionComp->GetActionCostByName("SecondaryAttack");
+	float RageCost = ActionComp->GetActionCostByName(SharedGameplayTags::Action_SecondaryAttack);
 	if (RageCost > 0.0f && AttributeComp->GetRage() >= RageCost)
 	{
-		if (ActionComp->StartActionByName(this, "SecondaryAttack"))
+		if (ActionComp->StartActionByName(this, SharedGameplayTags::Action_SecondaryAttack))
 		{
 			AttributeComp->UseRage(RageCost);
 		}
 	} else if (RageCost == 0.0f)
 	{
-		ActionComp->StartActionByName(this, "SecondaryAttack");
+		ActionComp->StartActionByName(this, SharedGameplayTags::Action_SecondaryAttack);
 	}
 }
 
 void ADaCharacter::Dash()
 {
-	ActionComp->StartActionByName(this, "Dash");
+	ActionComp->StartActionByName(this, SharedGameplayTags::Action_Dash);
 }
 
 void ADaCharacter::PrimaryInteraction()
@@ -277,7 +277,7 @@ bool ADaCharacter::IsRageActionAvailable() const
 		return false;
 	}
 	
-	float RageCost = ActionComp->GetActionCostByName("SecondaryAttack");
+	float RageCost = ActionComp->GetActionCostByName(SharedGameplayTags::Action_SecondaryAttack);
 	if (AttributeComp->GetRage() >= RageCost)
 	{
 		return true;
