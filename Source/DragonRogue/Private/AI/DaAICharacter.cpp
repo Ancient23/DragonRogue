@@ -95,7 +95,8 @@ void ADaAICharacter::OnHealthChanged(AActor* InstigatorActor, UDaAttributeCompon
 			SetTargetActor(InstigatorActor);
 		}
 
-		if (ActiveHealthBar == nullptr)
+		// create once and skip if instant kill
+		if (ActiveHealthBar == nullptr && NewHealth > 0.0f)
 		{
 			ActiveHealthBar = CreateWidget<UDaWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
 			if (ActiveHealthBar)
