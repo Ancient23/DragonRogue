@@ -19,10 +19,10 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category="Components")
-	UStaticMeshComponent* StaticMeshComp;
+	TObjectPtr<UStaticMeshComponent> StaticMeshComp;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
-	URadialForceComponent* RadialForceComp;
+	TObjectPtr<URadialForceComponent> RadialForceComp;
 
 	UPROPERTY(Replicated, EditAnywhere, Category="Damage")
 	float DamageAmount;

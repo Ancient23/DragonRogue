@@ -33,52 +33,52 @@ protected:
 	FName HitFlashColorParamName;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	USpringArmComponent* SpringArmComp;
+	TObjectPtr<USpringArmComponent> SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UCameraComponent* CameraComp;
+	TObjectPtr<UCameraComponent> CameraComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UDaInteractionComponent* InteractionComp;
+	TObjectPtr<UDaInteractionComponent> InteractionComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UDaAttributeComponent* AttributeComp;
+	TObjectPtr<UDaAttributeComponent> AttributeComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UDaActionComponent* ActionComp;
+	TObjectPtr<UDaActionComponent> ActionComp;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputMappingContext* MoveInputMappingContext;
+	TObjectPtr<UInputMappingContext> MoveInputMappingContext;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* MoveAction;
+	TObjectPtr<UInputAction> MoveAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* LookMouseAction;
+	TObjectPtr<UInputAction> LookMouseAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* LookStickAction;
+	TObjectPtr<UInputAction> LookStickAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* PrimaryAttackAction;
+	TObjectPtr<UInputAction> PrimaryAttackAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* SecondaryAttackAction;
+	TObjectPtr<UInputAction> SecondaryAttackAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* DashAction;
+	TObjectPtr<UInputAction> DashAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* PrimaryInteractionAction;
+	TObjectPtr<UInputAction> PrimaryInteractionAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* JumpAction;
+	TObjectPtr<UInputAction> JumpAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* SprintAction;
+	TObjectPtr<UInputAction> SprintAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input)
-	UInputAction* PausseMenuAction;
+	TObjectPtr<UInputAction> PausseMenuAction;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

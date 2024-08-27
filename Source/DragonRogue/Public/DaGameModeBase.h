@@ -65,22 +65,22 @@ protected:
 	int32 CreditsPerKill;
 
 	UPROPERTY(EditDefaultsOnly, Category="Pickups")
-	UEnvQuery* SpawnItemQuery;
+	TObjectPtr<UEnvQuery> SpawnItemQuery;
 
 	UPROPERTY(EditDefaultsOnly, Category="Pickups")
 	TMap<FGameplayTag, TSubclassOf<ADaPickupItem>> ItemClasses;
 
 	UPROPERTY(EditDefaultsOnly, Category="AI")
-	UDataTable* MonsterTable;
+	TObjectPtr<UDataTable> MonsterTable;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ruleset")
 	bool bAutoRespawnPlayer;
 	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
-	UEnvQuery* SpawnBotQuery;
+	TObjectPtr<UEnvQuery> SpawnBotQuery;
 	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
-	UCurveFloat* DifficultyCurve;
+	TObjectPtr<UCurveFloat> DifficultyCurve;
 
 	// Values > 0 will override DifficultyCurve. Note: Leave at 0 to use Difficulty Curve
 	UPROPERTY(EditDefaultsOnly, Category="AI")

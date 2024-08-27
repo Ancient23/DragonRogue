@@ -29,10 +29,10 @@ protected:
 	float AttackAnimDelay;
 
 	UPROPERTY(EditAnywhere, Category="Attack")
-	UAnimMontage* AttackAnim;
+	TObjectPtr<UAnimMontage> AttackAnim;
 
 	UPROPERTY(EditAnywhere, Category = "Effects")
-	UParticleSystem* CastingEffect;
+	TObjectPtr<UParticleSystem> CastingEffect;
 
 	UFUNCTION()
 	void AttackDelay_Elapsed(ACharacter* InstigatorCharacter);

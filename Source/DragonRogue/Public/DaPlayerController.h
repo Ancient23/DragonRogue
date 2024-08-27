@@ -27,7 +27,7 @@ protected:
 	TSubclassOf<UUserWidget> PauseMenuClass;
 
 	UPROPERTY()
-	UUserWidget* PauseMenuInstance;
+	TObjectPtr<UUserWidget> PauseMenuInstance;
 	
 	// Listen for incoming player state (for clients this may be nullptr when initially joining a game, 
 	// afterwards player state will not change again as PlayerControllers maintain the same player state throughout the level)

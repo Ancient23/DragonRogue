@@ -24,7 +24,7 @@ protected:
 	FString CurrentSlotName;
 
 	UPROPERTY()
-	UDaSaveGame* CurrentSaveGame;
+	TObjectPtr<UDaSaveGame> CurrentSaveGame;
 
 public:
 

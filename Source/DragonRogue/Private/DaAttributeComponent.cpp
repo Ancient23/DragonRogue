@@ -44,7 +44,7 @@ UDaAttributeComponent* UDaAttributeComponent::GetAttributes(AActor* FromActor)
 {
 	if (FromActor)
 	{
-		return Cast<UDaAttributeComponent>(FromActor->GetComponentByClass(UDaAttributeComponent::StaticClass()));
+		return Cast<UDaAttributeComponent>(FromActor->FindComponentByClass<UDaAttributeComponent>());
 	}
 
 	return nullptr;

@@ -19,25 +19,25 @@ class DRAGONROGUE_API ADaProjectile : public AActor
 protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
-	USphereComponent* SphereComp;
+	TObjectPtr<USphereComponent> SphereComp;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
-	UProjectileMovementComponent* MovementComp;
+	TObjectPtr<UProjectileMovementComponent> MovementComp;
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Components")
-	UParticleSystemComponent* EffectComp;
+	TObjectPtr<UParticleSystemComponent> EffectComp;
 
 	UPROPERTY(VisibleAnywhere, Category="Components")
-	UAudioComponent* FlightSoundComp;
+	TObjectPtr<UAudioComponent> FlightSoundComp;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	UParticleSystem* ImpactVFX;
+	TObjectPtr<UParticleSystem> ImpactVFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	UParticleSystem* LaunchVFX;
+	TObjectPtr<UParticleSystem> LaunchVFX;
 	
 	UPROPERTY(EditDefaultsOnly, Category= "Effects")
-	USoundBase* ImpactSound;
+	TObjectPtr<USoundBase> ImpactSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<UCameraShakeBase> ImpactShake;

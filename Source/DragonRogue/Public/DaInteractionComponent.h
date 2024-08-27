@@ -35,7 +35,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UPROPERTY()
-	AActor* FocusedActor;
+	TObjectPtr<AActor> FocusedActor;
 
 	UPROPERTY(EditDefaultsOnly, Category="Trace")
 	float TraceDistance;
@@ -50,7 +50,7 @@ protected:
 	TSubclassOf<UDaWorldUserWidget> DefaultWidgetClass;
 
 	UPROPERTY()
-	UDaWorldUserWidget* DefaultWidgetInstance;
+	TObjectPtr<UDaWorldUserWidget> DefaultWidgetInstance;
 
 	void RemoveWidget();
 	

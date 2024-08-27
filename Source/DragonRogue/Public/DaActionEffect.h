@@ -16,9 +16,9 @@ class DRAGONROGUE_API UDaActionEffect : public UDaAction
 
 public:
 
-	void StartAction_Implementation(AActor* Instigator) override;
+	virtual void StartAction_Implementation(AActor* Instigator) override;
 
-	void StopAction_Implementation(AActor* Instigator) override;
+	virtual void StopAction_Implementation(AActor* Instigator) override;
 
 	UFUNCTION(BlueprintCallable, Category="Action")
 	float GetTimeRemaining() const;

@@ -24,7 +24,7 @@ public:
 	UPROPERTY(EditAnywhere, Category="Credits")
 	int32 Cost;
 	
-	void Interact_Implementation(APawn* InstigatorPawn) override;
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 };

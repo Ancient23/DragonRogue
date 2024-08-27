@@ -18,13 +18,13 @@ class DRAGONROGUE_API UDaWorldUserWidget : public UUserWidget
 protected:
 
 	UPROPERTY(meta = (BindWidget))
-	USizeBox* ParentSizeBox;
+	TObjectPtr<USizeBox> ParentSizeBox;
 	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 public: 
 	UPROPERTY(BlueprintReadWrite, Category="UI", meta = (ExposeOnSpawn=true))
-	AActor* AttachedActor;
+	TObjectPtr<AActor> AttachedActor;
 
 	UPROPERTY(EditAnywhere, Category="UI")
 	FVector WorldOffset;

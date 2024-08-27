@@ -22,7 +22,7 @@ protected:
 	bool bIsStunned;
 
 	UPROPERTY(BlueprintReadOnly, Category="Animation")
-	UDaActionComponent* ActionComp;
+	TObjectPtr<UDaActionComponent> ActionComp;
 	
 	virtual void NativeInitializeAnimation() override;
 

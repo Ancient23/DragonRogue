@@ -20,7 +20,7 @@ public:
 	bool bIsRunning;
 
 	UPROPERTY()
-	AActor* Instigator;
+	TObjectPtr<AActor> Instigator;
 };
 
 /**

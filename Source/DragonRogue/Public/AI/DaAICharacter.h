@@ -25,13 +25,13 @@ public:
 protected:
 
 	UPROPERTY(VisibleDefaultsOnly, Category="UI")
-	UDaWorldUserWidget* ActiveHealthBar;
+	TObjectPtr<UDaWorldUserWidget> ActiveHealthBar;
 
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
 
 	UPROPERTY(VisibleDefaultsOnly, Category="UI")
-	UDaWorldUserWidget* PlayerSeenWidget;
+	TObjectPtr<UDaWorldUserWidget> PlayerSeenWidget;
 	
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<UUserWidget> PlayerSeenWidgetClass;
@@ -46,13 +46,13 @@ protected:
 	FName HitFlashColorParamName;
 	
 	UPROPERTY(VisibleAnywhere, Category="Components")
-	UPawnSensingComponent* PawnSensingComp;
+	TObjectPtr<UPawnSensingComponent> PawnSensingComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UDaAttributeComponent* AttributeComp;
+	TObjectPtr<UDaAttributeComponent> AttributeComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UDaActionComponent* ActionComp;
+	TObjectPtr<UDaActionComponent> ActionComp;
 
 	UPROPERTY(VisibleDefaultsOnly, Category="AI")
 	FName TargetActorKey;

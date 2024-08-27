@@ -23,7 +23,7 @@ public:
 	TArray<TSubclassOf<UDaAction>> Actions;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	UTexture2D* Icon;
+	TObjectPtr<UTexture2D> Icon;
 
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{

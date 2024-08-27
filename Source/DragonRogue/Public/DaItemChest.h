@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float TargetPitch;
 	
-	void Interact_Implementation(APawn* InstigatorPawn) override;
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 	
@@ -33,10 +33,10 @@ protected:
 	void OnRep_LidOpened();
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	UStaticMeshComponent* BaseMesh;
+	TObjectPtr<UStaticMeshComponent> BaseMesh;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	UStaticMeshComponent* LidMesh;
+	TObjectPtr<UStaticMeshComponent> LidMesh;
 
 	// need to set rules for replicated properties
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
