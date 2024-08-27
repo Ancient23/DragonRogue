@@ -4,19 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "EnvironmentQuery/EnvQueryTypes.h"
 #include "GameFramework/GameModeBase.h"
 #include "DaGameModeBase.generated.h"
 
 class UDaMonsterData;
 class ADaPickupItem;
-
-namespace EEnvQueryStatus
-{
-	enum Type : int;
-}
-
 class UEnvQuery;
-class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
 class AController;
 
@@ -86,25 +80,30 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	uint32 MaxBotsOverride;
 	
-	FTimerHandle TimerHandle_SpawnBots;
+	/* Amount available to start spawning some bots immediately */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+	int32 InitialSpawnCredit;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+	bool bAutoStartBotSpawning;
+	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	float SpawnTimerInterval;
 
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 
-	UFUNCTION()
-	void OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void OnSpawnBotQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
-	UFUNCTION()
-	void OnSpawnItemQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void OnSpawnItemQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 	
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
 
 	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation);
-	
+
+	FTimerHandle TimerHandle_SpawnBots;
+
 public:
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
@@ -115,6 +114,9 @@ public:
 	
 	virtual void StartPlay() override;
 
+	UFUNCTION(BlueprintCallable)
+	void StartSpawningBots();
+	
 	UFUNCTION(Exec)
 	void KillAll();
 

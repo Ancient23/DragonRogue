@@ -11,7 +11,6 @@
 #include "AI/DaAICharacter.h"
 #include "DragonRogue/DragonRogue.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
-#include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "EngineUtils.h"
 #include "DragonRogue/DaConstants.h"
 #include "GameFramework/GameStateBase.h"
@@ -29,8 +28,12 @@ ADaGameModeBase::ADaGameModeBase()
 	SpawnTimerInterval=2.0f;
 	CreditsPerKill = 10;
 	MaxBotsOverride = 0;
+	InitialSpawnCredit = 50;
 
 	bAutoRespawnPlayer = true;
+
+	// Spawn when player enters area (AKA Trigger box in BP)
+	bAutoStartBotSpawning = true;
 }
 
 void ADaGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -46,20 +49,40 @@ void ADaGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 void ADaGameModeBase::StartPlay()
 {
 	Super::StartPlay();
-
-	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ADaGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
-
-	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnItemQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
-	if (ensure(QueryInstance))
+	
+	if (bAutoStartBotSpawning)
 	{
-		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ADaGameModeBase::OnSpawnItemQueryCompleted);
+		StartSpawningBots();
 	}
+	
+	// UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnItemQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
+	// if (ensure(QueryInstance))
+	// {
+	// 	QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ADaGameModeBase::OnSpawnItemQueryCompleted);
+	// }
+
+	// Skip the Blueprint wrapper and use the direct C++ option which the Wrapper uses as well
+	FEnvQueryRequest Request(SpawnItemQuery, this);
+	Request.Execute(EEnvQueryRunMode::AllMatching, this, &ADaGameModeBase::OnSpawnItemQueryCompleted);
 }
 
-void ADaGameModeBase::OnSpawnItemQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
-	EEnvQueryStatus::Type QueryStatus)
+void ADaGameModeBase::StartSpawningBots()
 {
-	if (QueryStatus != EEnvQueryStatus::Success)
+	if (TimerHandle_SpawnBots.IsValid())
+	{
+		// Already spawning bots.
+		return;
+	}
+
+	// Continuous timer to spawn in more bots.
+	// Actual amount of bots and whether its allowed to spawn determined by spawn logic later in the chain...
+	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ADaGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
+}
+
+void ADaGameModeBase::OnSpawnItemQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
+{
+	FEnvQueryResult* QueryResult = Result.Get();
+	if (!QueryResult->IsSuccessful())
 	{
 		LOG_WARNING("Spawn ITEM EQS Query Failed");
 		return;
@@ -83,7 +106,9 @@ void ADaGameModeBase::OnSpawnItemQueryCompleted(UEnvQueryInstanceBlueprintWrappe
 	//@TODO: Currently relying on EQS to filter out items, but we could just a get a grid and use something like "Algo/RandomShuffle.h" and pick the first X items from the array
 	// Also could introduce a spawn actor class that can be dropped in the map, instead of relying on GameMode's location (the QueryContext)
 	
-	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
+	// Retrieve all possible locations that passed the query
+	TArray<FVector> Locations;
+	QueryResult->GetAllAsLocations(Locations);
 	for (FVector Loc : Locations)
 	{
 		FGameplayTag CurrentTag = ItemTags[CurrentType++];
@@ -147,24 +172,30 @@ void ADaGameModeBase::SpawnBotTimerElapsed()
 		return;
 	}
 	
-	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
-	if (ensure(QueryInstance))
-	{
-		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ADaGameModeBase::OnSpawnBotQueryCompleted);
-	}
+	// UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
+	// if (ensure(QueryInstance))
+	// {
+	// 	QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ADaGameModeBase::OnSpawnBotQueryCompleted);
+	// }
+
+	// Skip the Blueprint wrapper and use the direct C++ option which the Wrapper uses as well
+	FEnvQueryRequest Request(SpawnBotQuery, this);
+	Request.Execute(EEnvQueryRunMode::RandomBest5Pct, this, &ADaGameModeBase::OnSpawnBotQueryCompleted);
 }
 
-void ADaGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
-	EEnvQueryStatus::Type QueryStatus)
+void ADaGameModeBase::OnSpawnBotQueryCompleted(TSharedPtr<FEnvQueryResult> Result)
 {
-	if (QueryStatus != EEnvQueryStatus::Success)
+	FEnvQueryResult* QueryResult = Result.Get();
+	if (!QueryResult->IsSuccessful())
 	{
 		//UE_LOG(DragonRogue, Warning, TEXT("Spawn bot EQS Query Failed"));
 		LOG_WARNING("Spawn bot EQS Query Failed");
 		return;
 	}
 
-	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
+	// Retrieve all possible locations that passed the query
+	TArray<FVector> Locations;
+	QueryResult->GetAllAsLocations(Locations);
 	if (Locations.IsValidIndex(0) && MonsterTable)
 	{
 		LogOnScreen(this, "Begin Loading", FColor::Yellow);
